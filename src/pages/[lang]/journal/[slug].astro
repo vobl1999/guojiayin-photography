@@ -3,6 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../../../components/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { formatDate, readingTime, slugFromId } from '../../../lib/utils';
+import { SITE } from '../../../config/site';
 import { translate, type Lang } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
@@ -35,9 +36,32 @@ const cover = post.data.cover;
 const coverUrl = cover ? (await getImage({ src: cover, widths: [900, 1600, 2200], sizes: '100vw' })).src : undefined;
 const description = post.data.description;
 const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefined;
+const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
+
+// 文章结构化数据（BlogPosting）
+const articleLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  ...(post.data.updated ? { dateModified: post.data.updated.toISOString() } : {}),
+  author: { '@type': 'Person', name: SITE.name, alternateName: SITE.nameZh, url: SITE.url },
+  publisher: { '@type': 'Person', name: SITE.name, url: SITE.url },
+  mainEntityOfPage: pageUrl,
+  ...(ogImage ? { image: ogImage } : {}),
+  inLanguage: L,
+});
 ---
 
-<Layout title={post.data.title} description={description} ogType="article" image={ogImage}>
+<Layout
+  title={post.data.title}
+  description={description}
+  ogType="article"
+  image={ogImage}
+  jsonLd={articleLd}
+>
+  <div class="reading-progress" data-progress aria-hidden="true"><span></span></div>
   <article>
     <header class="article-head container">
       <p class="label">
@@ -89,6 +113,26 @@ const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefi
 </Layout>
 
 <style>
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 150;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .reading-progress span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
   .back-link {
     color: var(--ink-2);
     transition: color 0.3s;
@@ -193,3 +237,18 @@ const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefi
     }
   }
 </style>
+
+<script>
+  // 阅读进度条
+  (() => {
+    const bar = document.querySelector<HTMLElement>('[data-progress] span');
+    if (!bar) return;
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      bar.style.transform = `scaleX(${max > 0 ? Math.min(1, h.scrollTop / max) : 0})`;
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  })();
+</script>

@@ -17,6 +17,7 @@ const p = (path: string) => (L === 'zh' ? '/zh' : '/en') + path;
 const posts = (await getCollection('posts', ({ data }) => !data.draft && data.lang === L)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags))];
 ---
 
 <Layout title={t('journal.title')} description={t('journal.intro')}>
@@ -28,33 +29,60 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft && data.la
     </Reveal>
   </header>
 
+  {
+    allTags.length > 0 && (
+      <div class="container chips" data-reveal>
+        <button class="chip is-active" data-filter="all">{t('gallery.all')}</button>
+        {allTags.map((tag) => <button class="chip" data-filter={tag}>#{tag}</button>)}
+      </div>
+    )
+  }
+
   <section class="journal-list section" aria-label={t('journal.title')}>
     {
       posts.length === 0 ? (
         <p class="journal-empty">{L === 'zh' ? '还没有文章，去 src/content/posts/ 写一篇吧。' : 'No essays yet — add a markdown file to src/content/posts/.'}</p>
       ) : (
         posts.map((post, i) => (
-          <Reveal as="div" delay={Math.min(i * 60, 240)}>
-            <a class="journal-row" href={p(`/journal/${slugFromId(post.id)}`)}>
-              <span class="j-num">{String(i + 1).padStart(2, '0')}</span>
-              <span class="j-title">
-                {post.data.title}
-                <span class="j-desc">{post.data.description}</span>
-              </span>
-              <span class="j-meta">
-                <span>{formatDateShort(post.data.date, L)}</span>
-                <span>{readingTime(post.body ?? '', L)} {L === 'zh' ? '分钟' : 'min read'}</span>
-                {post.data.tags.length > 0 && (
-                  <span class="j-tags">{post.data.tags.map((tag) => `#${tag}`).join('  ')}</span>
-                )}
-              </span>
-            </a>
-          </Reveal>
+          <div class="journal-item" data-tags={post.data.tags.join(' ')}>
+            <Reveal as="div" delay={Math.min(i * 60, 240)}>
+              <a class="journal-row" href={p(`/journal/${slugFromId(post.id)}`)}>
+                <span class="j-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="j-title">
+                  {post.data.title}
+                  <span class="j-desc">{post.data.description}</span>
+                </span>
+                <span class="j-meta">
+                  <span>{formatDateShort(post.data.date, L)}</span>
+                  <span>{readingTime(post.body ?? '', L)} {L === 'zh' ? '分钟' : 'min read'}</span>
+                  {post.data.tags.length > 0 && (
+                    <span class="j-tags">{post.data.tags.map((tag) => `#${tag}`).join('  ')}</span>
+                  )}
+                </span>
+              </a>
+            </Reveal>
+          </div>
         ))
       )
     }
   </section>
 </Layout>
+
+<script>
+  // 标签筛选
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.journal-item'));
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => c.classList.toggle('is-active', c === chip));
+      const f = chip.dataset.filter ?? 'all';
+      items.forEach((el) => {
+        const tags = (el.dataset.tags ?? '').split(' ').filter(Boolean);
+        el.classList.toggle('is-hidden', f !== 'all' && !tags.includes(f));
+      });
+    });
+  });
+</script>
 
 <style>
   .page-head {
@@ -84,6 +112,40 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft && data.la
     font-size: 1.2rem;
     color: var(--ink-2);
     padding-block: 4rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    padding-top: clamp(1.6rem, 3vw, 2.4rem);
+  }
+
+  .chip {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    transition: all 0.35s var(--ease);
+  }
+
+  .chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .chip.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .journal-item.is-hidden {
+    display: none;
   }
 
   .j-desc {
