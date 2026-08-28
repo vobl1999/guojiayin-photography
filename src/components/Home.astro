@@ -58,7 +58,7 @@ const aboutIntro = aboutEntry?.data.intro;
 {
   statement && (
     <section class="container statement" data-reveal>
-      <a href={p('/gallery')} class="statement-link">
+      <a href={p('/gallery')} class="statement-link" aria-label={statement.title}>
         <Image
           src={statement.src}
           alt={statement.title}
@@ -67,10 +67,6 @@ const aboutIntro = aboutEntry?.data.intro;
           loading="eager"
           decoding="async"
         />
-        <span class="statement-caption">
-          <span class="photo-title">{statement.title}</span>
-          {statement.location && <span class="photo-location">{statement.location}</span>}
-        </span>
       </a>
     </section>
   )
@@ -228,21 +224,6 @@ const aboutIntro = aboutEntry?.data.intro;
 
   .statement-link:hover img {
     transform: scale(1.02);
-  }
-
-  .statement-caption {
-    position: absolute;
-    left: 1.4rem;
-    bottom: 1.2rem;
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    color: var(--white);
-    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
-  }
-
-  .statement-caption .photo-title {
-    font-size: 1.15rem;
   }
 
   .section-head {

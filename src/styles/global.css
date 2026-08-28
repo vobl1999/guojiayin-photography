@@ -280,30 +280,6 @@ em {
   font-variant-numeric: tabular-nums;
 }
 
-.photo-meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-top: 0.85rem;
-}
-
-.photo-title {
-  font-family: var(--serif);
-  font-variation-settings: 'opsz' 20;
-  font-size: 1.05rem;
-  line-height: 1.25;
-  letter-spacing: 0.005em;
-}
-
-.photo-location {
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  white-space: nowrap;
-}
-
 /* ── Header ────────────────────────────────────────────────── */
 .site-header {
   position: sticky;

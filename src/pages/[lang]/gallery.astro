@@ -112,12 +112,10 @@ const count = photos.length;
     </button>
     <figure class="lb-figure">
       <img class="lb-img" alt="" />
-      <figcaption class="lb-caption"></figcaption>
     </figure>`;
   document.body.appendChild(lb);
 
   const lbImg = lb.querySelector<HTMLImageElement>('.lb-img')!;
-  const lbCaption = lb.querySelector<HTMLElement>('.lb-caption')!;
   let current = 0;
   let lbOpen = false;
 
@@ -128,7 +126,6 @@ const count = photos.length;
     const card = list[current].querySelector<HTMLElement>('[data-photo]')!;
     lbImg.src = card.dataset.src ?? '';
     lbImg.alt = card.dataset.caption ?? '';
-    lbCaption.textContent = card.dataset.caption ?? '';
   }
 
   function openLightbox(index: number) {
@@ -288,17 +285,9 @@ const count = photos.length;
 
   :global(.lb-img) {
     max-width: 94vw;
-    max-height: 82vh;
+    max-height: 86vh;
     object-fit: contain;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
-  }
-
-  :global(.lb-caption) {
-    font-family: var(--serif);
-    font-size: 0.95rem;
-    color: rgba(244, 241, 234, 0.85);
-    text-align: center;
-    padding-inline: 1rem;
   }
 
   :global(.lb-btn) {
