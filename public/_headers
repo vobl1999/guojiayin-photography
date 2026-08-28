@@ -1,8 +1,6 @@
-/*
-  Cloudflare Pages 响应头与缓存策略
-  Pages 每次新部署都会自动清空边缘缓存，因此 HTML 也可以放心长缓存：
-  国内访客重复访问时全部命中边缘节点，速度大幅提升
-*/
+# Cloudflare Pages headers & cache strategy.
+# Pages purges the edge cache on every deployment, so HTML can be cached safely:
+# repeat visitors (incl. mainland China) hit edge nodes without origin fetches.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
