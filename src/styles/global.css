@@ -370,12 +370,14 @@ html.js img.photo-img.is-loaded {
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 1.6rem;
   min-width: 0;
 }
 
 .hassel-head {
-  width: clamp(2.6rem, 5.5vw, 3.6rem);
+  /* 与名字同高：字标是超宽比例，同高即同视觉大小 */
+  height: clamp(0.8rem, 2vw, 0.96rem);
+  width: auto;
   aspect-ratio: 76.14 / 5.089;
   flex: none;
   background-color: var(--ink);
@@ -385,7 +387,13 @@ html.js img.photo-img.is-loaded {
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  opacity: 0.9;
+  opacity: 0.92;
+}
+
+@media (max-width: 640px) {
+  .hassel-head {
+    height: 0.58rem;
+  }
 }
 
 .nav {
