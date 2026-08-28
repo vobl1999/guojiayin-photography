@@ -31,8 +31,10 @@ const { Content } = entry ? await render(entry) : { Content: undefined };
             <Image
               src={portrait}
               alt={portraitAlt ?? title}
-              widths={[500, 900, 1300]}
+              widths={[400, 700, 1000]}
               sizes="(min-width: 900px) 38vw, 92vw"
+              format="webp"
+              quality={80}
               loading="eager"
               decoding="async"
             />

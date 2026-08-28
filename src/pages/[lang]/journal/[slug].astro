@@ -33,7 +33,9 @@ const prev = idx > 0 ? siblings[idx - 1] : undefined;
 const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : undefined;
 
 const cover = post.data.cover;
-const coverUrl = cover ? (await getImage({ src: cover, widths: [900, 1600, 2200], sizes: '100vw' })).src : undefined;
+const coverUrl = cover
+  ? (await getImage({ src: cover, widths: [900, 1600, 2200], sizes: '100vw', format: 'webp', quality: 80 })).src
+  : undefined;
 const description = post.data.description;
 const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefined;
 const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
@@ -103,6 +105,8 @@ const articleLd = JSON.stringify([
             alt={post.data.coverAlt ?? post.data.title}
             widths={[900, 1600, 2200]}
             sizes="100vw"
+            format="webp"
+            quality={80}
             loading="eager"
             decoding="async"
           />

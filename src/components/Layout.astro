@@ -133,13 +133,21 @@ const personLd = JSON.stringify({
 
       // 主题切换 + 浏览器栏配色同步
       const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+      const toggleButtons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')
+      );
       const applyMetaTheme = () => {
         if (!metaTheme) return;
         metaTheme.content =
           document.documentElement.getAttribute('data-theme') === 'dark' ? '#131110' : '#f4f1ea';
       };
+      const syncToggleAria = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        toggleButtons.forEach((b) => b.setAttribute('aria-checked', String(isDark)));
+      };
       applyMetaTheme();
-      document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+      syncToggleAria();
+      toggleButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           const next =
             document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -148,6 +156,7 @@ const personLd = JSON.stringify({
             localStorage.setItem('theme-vobl', next);
           } catch {}
           applyMetaTheme();
+          syncToggleAria();
         });
       });
     </script>

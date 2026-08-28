@@ -432,38 +432,50 @@ html.js img.photo-img.is-loaded {
   color: var(--ink);
 }
 
-/* 主题切换按钮 */
+/* 主题切换：简约滑块 */
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   margin-left: clamp(1.2rem, 2.6vw, 2rem);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  color: var(--ink-2);
-  transition: color 0.3s;
+  padding: 0.2rem;
 }
 
-.theme-toggle:hover {
-  color: var(--ink);
+.theme-track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  border: 1px solid var(--line-strong);
+  transition: background 0.35s var(--ease), border-color 0.35s;
 }
 
-.theme-toggle svg {
-  width: 15px;
-  height: 15px;
-  flex: none;
+.theme-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink-2);
+  transition: transform 0.35s var(--ease), background 0.35s;
 }
 
-.theme-toggle .icon-sun {
-  display: none;
+[data-theme='dark'] .theme-track {
+  border-color: var(--gold);
 }
 
-[data-theme='dark'] .theme-toggle .icon-sun {
-  display: block;
+[data-theme='dark'] .theme-knob {
+  transform: translateX(16px);
+  background: var(--gold);
 }
 
-[data-theme='dark'] .theme-toggle .icon-moon {
-  display: none;
+.theme-toggle:hover .theme-track {
+  border-color: var(--ink-3);
+}
+
+[data-theme='dark'] .theme-toggle:hover .theme-track {
+  border-color: var(--gold);
 }
 
 .menu-toggle {
