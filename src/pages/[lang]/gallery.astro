@@ -139,6 +139,7 @@ const galleryLd = JSON.stringify({
   const lbCamera = lb.querySelector<HTMLElement>('.lb-camera')!;
   let current = 0;
   let lbOpen = false;
+  let lastTrigger: HTMLElement | null = null;
 
   // 缩放状态（点击/滚轮放大看细节）
   let zoom = 1;
@@ -197,18 +198,26 @@ const galleryLd = JSON.stringify({
     lbOpen = true;
     lb.classList.add('is-open');
     document.body.classList.add('no-scroll');
+    // 焦点移入 Lightbox，关闭后归还给触发元素
+    (lb.querySelector('.lb-close') as HTMLElement | null)?.focus();
   }
 
   function closeLightbox() {
     lbOpen = false;
     lb.classList.remove('is-open');
     document.body.classList.remove('no-scroll');
+    lastTrigger?.focus();
   }
 
-  cards.forEach((card, i) => {
+  cards.forEach((card) => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
-      openLightbox(i);
+      // 用可见列表定位当前卡片，避免筛选后索引错位
+      const list = visible.filter((el) => el.querySelector('[data-photo]'));
+      const gridItem = card.closest<HTMLElement>('.grid-item');
+      const idx = gridItem ? list.indexOf(gridItem) : -1;
+      lastTrigger = card;
+      openLightbox(idx >= 0 ? idx : 0);
     });
   });
 
