@@ -327,13 +327,6 @@ html.js img.photo-img.is-loaded {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 1.4s var(--ease);
-  will-change: transform;
-}
-
-.photo-card:hover .photo-frame img,
-.photo-card:focus-within .photo-frame img {
-  transform: scale(1.045);
 }
 
 .photo-index {
