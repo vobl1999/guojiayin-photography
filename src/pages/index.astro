@@ -1,0 +1,10 @@
+---
+// 根路径：直接显示英文首页（/en 是同一页面的正式地址）
+import Layout from '../components/Layout.astro';
+import Home from '../components/Home.astro';
+import { SITE } from '../config/site';
+---
+
+<Layout title={SITE.name} description={SITE.description}>
+  <Home lang="en" />
+</Layout>

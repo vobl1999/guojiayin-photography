@@ -1,0 +1,101 @@
+---
+import Layout from '../../components/Layout.astro';
+import Reveal from '../../components/Reveal.astro';
+import { getCollection } from 'astro:content';
+import { formatDateShort, readingTime, slugFromId } from '../../lib/utils';
+import { translate, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const { lang = 'en' } = Astro.params;
+const L: Lang = lang === 'zh' ? 'zh' : 'en';
+const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
+const p = (path: string) => (L === 'zh' ? '/zh' : '/en') + path;
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.lang === L)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title={t('journal.title')} description={t('journal.intro')}>
+  <header class="page-head container">
+    <Reveal>
+      <p class="label">{t('nav.journal')}</p>
+      <h1 class="display-2 page-title">{t('journal.title')}</h1>
+      <p class="page-intro">{t('journal.intro')}</p>
+    </Reveal>
+  </header>
+
+  <section class="journal-list section" aria-label={t('journal.title')}>
+    {
+      posts.length === 0 ? (
+        <p class="journal-empty">{L === 'zh' ? '还没有文章，去 src/content/posts/ 写一篇吧。' : 'No essays yet — add a markdown file to src/content/posts/.'}</p>
+      ) : (
+        posts.map((post, i) => (
+          <Reveal as="div" delay={Math.min(i * 60, 240)}>
+            <a class="journal-row" href={p(`/journal/${slugFromId(post.id)}`)}>
+              <span class="j-num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="j-title">
+                {post.data.title}
+                <span class="j-desc">{post.data.description}</span>
+              </span>
+              <span class="j-meta">
+                <span>{formatDateShort(post.data.date, L)}</span>
+                <span>{readingTime(post.body ?? '', L)} {L === 'zh' ? '分钟' : 'min read'}</span>
+                {post.data.tags.length > 0 && (
+                  <span class="j-tags">{post.data.tags.map((tag) => `#${tag}`).join('  ')}</span>
+                )}
+              </span>
+            </a>
+          </Reveal>
+        ))
+      )
+    }
+  </section>
+</Layout>
+
+<style>
+  .page-head {
+    padding-top: clamp(4rem, 9vw, 7rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .page-head .label {
+    margin-bottom: 1.4rem;
+  }
+
+  .page-title {
+    margin-bottom: 1.2rem;
+  }
+
+  .page-intro {
+    max-width: 34rem;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--ink-2);
+  }
+
+  .journal-empty {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--ink-2);
+    padding-block: 4rem;
+  }
+
+  .j-desc {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: var(--ink-3);
+    max-width: 40rem;
+    line-height: 1.6;
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import Layout from '../components/Layout.astro';
+import Reveal from '../components/Reveal.astro';
+import { translate } from '../i18n/ui';
+---
+
+<Layout title="404" noindex>
+  <section class="notfound container">
+    <Reveal>
+      <p class="label">404</p>
+      <h1 class="display-1">{translate('en', '404.title')}</h1>
+      <p class="nf-text">{translate('en', '404.text')}</p>
+      <a class="link" href="/en">{translate('en', '404.cta')}<span class="arrow">&nbsp;→</span></a>
+    </Reveal>
+  </section>
+</Layout>
+
+<style>
+  .nf-text {
+    max-width: 26rem;
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--ink-2);
+    margin-block: 1.6rem 2.2rem;
+  }
+</style>

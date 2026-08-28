@@ -1,0 +1,7 @@
+# Cloudflare Pages 的 Wrangler 配置（可选）
+# 方式 A（推荐）：直接在 Cloudflare Pages 面板连接 GitHub 仓库，无需本文件
+# 方式 B：用 CLI 部署（需要先 wrangler login）
+#   npx wrangler pages deploy dist --project-name=guojiayin
+name = "guojiayin"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"

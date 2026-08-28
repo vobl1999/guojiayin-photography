@@ -1,0 +1,351 @@
+---
+import Layout from '../../components/Layout.astro';
+import Reveal from '../../components/Reveal.astro';
+import PhotoCard from '../../components/PhotoCard.astro';
+import { getAllPhotos } from '../../lib/gallery';
+import { translate, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const { lang = 'en' } = Astro.params;
+const L: Lang = lang === 'zh' ? 'zh' : 'en';
+const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
+
+const photos = await getAllPhotos(L);
+const collectionKeys = [...new Set(photos.map((p) => p.collection).filter((c): c is string => !!c))];
+const collections = collectionKeys.map((key) => {
+  const photo = photos.find((p) => p.collection === key);
+  return { key, label: L === 'zh' && photo?.collectionZh ? photo.collectionZh : key };
+});
+const count = photos.length;
+---
+
+<Layout title={t('gallery.title')} description={t('gallery.intro')}>
+  <header class="page-head container">
+    <Reveal>
+      <p class="label">{t('nav.portfolio')}</p>
+      <h1 class="display-2 page-title">{t('gallery.title')}</h1>
+      <p class="page-intro">{t('gallery.intro')}</p>
+      <p class="count label">{translate(L, 'gallery.count', { n: count })}</p>
+    </Reveal>
+  </header>
+
+  {
+    collections.length > 0 && (
+      <div class="container chips" data-reveal>
+        <button class="chip is-active" data-filter="all">{t('gallery.all')}</button>
+        {collections.map((c) => <button class="chip" data-filter={c.key}>{c.label}</button>)}
+      </div>
+    )
+  }
+
+  {
+    photos.length === 0 ? (
+      <p class="gallery-empty container">
+        {L === 'zh'
+          ? '相册还是空的 —— 把你的照片放进 src/assets/gallery/ 就会自动显示在这里。'
+          : 'The portfolio is empty — drop photographs into src/assets/gallery/ and they will appear here.'}
+      </p>
+    ) : (
+      <section class="gallery-grid" id="gallery" aria-label={t('gallery.title')}>
+        {
+          photos.map((photo, i) => (
+            <div
+              class="grid-item"
+              data-collection={photo.collection ?? ''}
+              style={`--reveal-delay:${(i % 3) * 90}ms`}
+            >
+              <PhotoCard photo={photo} index={i} priority={i < 2} lightbox />
+            </div>
+          ))
+        }
+      </section>
+    )
+  }
+</Layout>
+
+<script>
+  // ── 分类筛选 ──────────────────────────────────────────────
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+  const gridItems = Array.from(document.querySelectorAll<HTMLElement>('.grid-item'));
+  let visible: HTMLElement[] = gridItems;
+
+  function applyFilter(filter: string) {
+    visible = gridItems.filter(
+      (el) => filter === 'all' || el.dataset.collection === filter
+    );
+    gridItems.forEach((el) => {
+      el.classList.toggle('is-hidden', filter !== 'all' && el.dataset.collection !== filter);
+    });
+  }
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => c.classList.toggle('is-active', c === chip));
+      applyFilter(chip.dataset.filter ?? 'all');
+      if (lbOpen) closeLightbox();
+    });
+  });
+
+  // ── Lightbox ─────────────────────────────────────────────
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-photo]'));
+  const closeLabel = document.documentElement.lang === 'zh' ? '关闭' : 'Close';
+  const prevLabel = document.documentElement.lang === 'zh' ? '上一张' : 'Previous';
+  const nextLabel = document.documentElement.lang === 'zh' ? '下一张' : 'Next';
+
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.setAttribute('role', 'dialog');
+  lb.setAttribute('aria-modal', 'true');
+  lb.setAttribute('aria-label', closeLabel);
+  lb.innerHTML = `
+    <button class="lb-btn lb-close" aria-label="${closeLabel}">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button class="lb-btn lb-prev" aria-label="${prevLabel}">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="lb-btn lb-next" aria-label="${nextLabel}">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <figure class="lb-figure">
+      <img class="lb-img" alt="" />
+      <figcaption class="lb-caption"></figcaption>
+    </figure>`;
+  document.body.appendChild(lb);
+
+  const lbImg = lb.querySelector<HTMLImageElement>('.lb-img')!;
+  const lbCaption = lb.querySelector<HTMLElement>('.lb-caption')!;
+  let current = 0;
+  let lbOpen = false;
+
+  function show(index: number) {
+    const list = visible.filter((el) => el.querySelector('[data-photo]'));
+    if (!list.length) return;
+    current = (index + list.length) % list.length;
+    const card = list[current].querySelector<HTMLElement>('[data-photo]')!;
+    lbImg.src = card.dataset.src ?? '';
+    lbImg.alt = card.dataset.caption ?? '';
+    lbCaption.textContent = card.dataset.caption ?? '';
+  }
+
+  function openLightbox(index: number) {
+    show(index);
+    lbOpen = true;
+    lb.classList.add('is-open');
+    document.body.classList.add('no-scroll');
+  }
+
+  function closeLightbox() {
+    lbOpen = false;
+    lb.classList.remove('is-open');
+    document.body.classList.remove('no-scroll');
+  }
+
+  cards.forEach((card, i) => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLightbox(i);
+    });
+  });
+
+  lb.querySelector('.lb-close')!.addEventListener('click', closeLightbox);
+  lb.querySelector('.lb-prev')!.addEventListener('click', () => show(current - 1));
+  lb.querySelector('.lb-next')!.addEventListener('click', () => show(current + 1));
+
+  window.addEventListener('keydown', (e) => {
+    if (!lbOpen) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+
+  // 触摸滑动
+  let startX = 0;
+  lb.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  lb.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 48) show(current + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  lb.addEventListener('click', (e) => {
+    if (e.target === lb) closeLightbox();
+  });
+</script>
+
+<style>
+  .page-head {
+    padding-top: clamp(4rem, 9vw, 7rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .page-head .label {
+    margin-bottom: 1.4rem;
+  }
+
+  .page-title {
+    margin-bottom: 1.2rem;
+  }
+
+  .page-intro {
+    max-width: 34rem;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--ink-2);
+  }
+
+  .count {
+    margin-top: 1.6rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    padding-top: clamp(1.6rem, 3vw, 2.4rem);
+  }
+
+  .chip {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    transition: all 0.35s var(--ease);
+  }
+
+  .chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .chip.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .gallery-grid {
+    width: var(--container);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18.5rem), 1fr));
+    gap: clamp(2.2rem, 4vw, 3.2rem) var(--gap);
+    padding-block: clamp(2.5rem, 5vw, 4rem) var(--section);
+  }
+
+  .grid-item {
+    transition: opacity 0.5s var(--ease);
+  }
+
+  .gallery-empty {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--ink-2);
+    padding-block: 5rem var(--section);
+  }
+
+  .grid-item.is-hidden {
+    display: none;
+  }
+
+  /* ── Lightbox ─────────────────────────────── */
+  :global(.lightbox) {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(12, 10, 7, 0.93);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s var(--ease), visibility 0.4s;
+  }
+
+  :global(.lightbox.is-open) {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  :global(.lb-figure) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    max-width: min(96vw, 1600px);
+  }
+
+  :global(.lb-img) {
+    max-width: 94vw;
+    max-height: 82vh;
+    object-fit: contain;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  }
+
+  :global(.lb-caption) {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    color: rgba(244, 241, 234, 0.85);
+    text-align: center;
+    padding-inline: 1rem;
+  }
+
+  :global(.lb-btn) {
+    position: fixed;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    color: rgba(244, 241, 234, 0.7);
+    transition: color 0.3s, transform 0.3s;
+  }
+
+  :global(.lb-btn:hover) {
+    color: var(--paper);
+  }
+
+  :global(.lb-close) {
+    top: 1.2rem;
+    right: 1.2rem;
+  }
+
+  :global(.lb-prev) {
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  :global(.lb-next) {
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  :global(.lb-prev:hover) {
+    transform: translateY(-50%) translateX(-4px);
+  }
+
+  :global(.lb-next:hover) {
+    transform: translateY(-50%) translateX(4px);
+  }
+
+  :global(body.no-scroll) {
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    :global(.lb-prev) { left: 0.4rem; }
+    :global(.lb-next) { right: 0.4rem; }
+  }
+</style>

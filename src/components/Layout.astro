@@ -1,0 +1,77 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/fraunces/wght-italic.css';
+import '../styles/global.css';
+import { SITE } from '../config/site';
+import { langFromUrl, type Lang } from '../i18n/ui';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const { title, description = SITE.description, image, ogType = 'website', noindex = false } = Astro.props;
+const lang: Lang = langFromUrl(Astro.url);
+const fullTitle = title.includes(SITE.name) ? title : `${title} — ${SITE.name}`;
+const ogImage = image ?? SITE.ogImage;
+const canonical = new URL(Astro.url.pathname, SITE.url).href;
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, SITE.url).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Journal`} href="/rss.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE.name} />
+    {ogImage && <meta property="og:image" content={ogImageUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <script is:inline>
+      // 防止暗黑模式插件破坏高级设计
+      try {
+        if (localStorage.theme === 'dark') localStorage.removeItem('theme');
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+    <script>
+      // 滚动渐显（所有 [data-reveal] 元素）
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

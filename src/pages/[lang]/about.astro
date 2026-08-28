@@ -1,0 +1,122 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../components/Layout.astro';
+import Reveal from '../../components/Reveal.astro';
+import { getEntry, render } from 'astro:content';
+import { translate, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const { lang = 'en' } = Astro.params;
+const L: Lang = lang === 'zh' ? 'zh' : 'en';
+const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
+
+const entry = await getEntry('pages', L === 'zh' ? 'about-zh' : 'about-en');
+
+const title = entry?.data.title ?? t('about.title');
+const intro = entry?.data.intro;
+const portrait = entry?.data.portrait;
+const portraitAlt = entry?.data.portraitAlt;
+const { Content } = entry ? await render(entry) : { Content: undefined };
+---
+
+<Layout title={title} description={intro}>
+  <section class="about section container">
+    {
+      portrait && (
+        <Reveal>
+          <figure class="portrait">
+            <Image
+              src={portrait}
+              alt={portraitAlt ?? title}
+              widths={[500, 900, 1300]}
+              sizes="(min-width: 900px) 38vw, 92vw"
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+        </Reveal>
+      )
+    }
+
+    <div class="about-body">
+      <Reveal>
+        <p class="label">{t('nav.about')}</p>
+        <h1 class="display-2 about-title">{title}</h1>
+        {intro && <p class="about-intro">{intro}</p>}
+      </Reveal>
+
+      {Content && (
+        <Reveal delay={120}>
+          <div class="prose about-prose">
+            <Content />
+          </div>
+        </Reveal>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: minmax(17rem, 26rem) 1fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+    padding-top: clamp(4rem, 9vw, 7rem);
+  }
+
+  .portrait {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--paper-deep);
+  }
+
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .about-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+  }
+
+  .about-title {
+    margin-block: 1.1rem 1.4rem;
+  }
+
+  .about-intro {
+    max-width: 36rem;
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+
+  .about-prose {
+    font-size: 1.02rem;
+  }
+
+  .about-prose > * + * {
+    margin-top: 1.4em;
+  }
+
+  @media (max-width: 860px) {
+    .about {
+      grid-template-columns: 1fr;
+      padding-top: clamp(3rem, 7vw, 5rem);
+    }
+
+    .portrait {
+      position: static;
+      max-width: 26rem;
+    }
+  }
+</style>

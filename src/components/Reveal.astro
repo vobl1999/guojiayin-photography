@@ -1,0 +1,15 @@
+---
+interface Props {
+  /** 动画延迟（毫秒），用于交错出现 */
+  delay?: number;
+  as?: 'div' | 'section' | 'li' | 'figure';
+}
+
+const { delay = 0, as = 'div' }: Props = Astro.props;
+const Tag = as;
+const style = delay ? `--reveal-delay: ${delay}ms` : undefined;
+---
+
+<Tag data-reveal style={style}>
+  <slot />
+</Tag>

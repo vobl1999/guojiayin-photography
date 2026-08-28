@@ -1,0 +1,195 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Layout from '../../../components/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { formatDate, readingTime, slugFromId } from '../../../lib/utils';
+import { translate, type Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { lang: post.data.lang, slug: slugFromId(post.id) },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: import('astro:content').CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const L: Lang = post.data.lang;
+const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
+const p = (path: string) => (L === 'zh' ? '/zh' : '/en') + path;
+
+const { Content } = await render(post);
+
+const siblings = (
+  await getCollection('posts', ({ data }) => !data.draft && data.lang === L)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const idx = siblings.findIndex((s) => s.id === post.id);
+const prev = idx > 0 ? siblings[idx - 1] : undefined;
+const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : undefined;
+
+const cover = post.data.cover;
+const coverUrl = cover ? (await getImage({ src: cover, widths: [900, 1600, 2200], sizes: '100vw' })).src : undefined;
+const description = post.data.description;
+const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefined;
+---
+
+<Layout title={post.data.title} description={description} ogType="article" image={ogImage}>
+  <article>
+    <header class="article-head container">
+      <p class="label">
+        <a class="back-link" href={p('/journal')}>←&nbsp;{t('journal.back')}</a>
+      </p>
+      <h1 class="display-2 article-title">{post.data.title}</h1>
+      <div class="article-meta">
+        <span>{t('journal.published')} {formatDate(post.data.date, L)}</span>
+        {post.data.updated && <span>{t('journal.updated')} {formatDate(post.data.updated, L)}</span>}
+        <span>{readingTime(post.body ?? '', L)} {L === 'zh' ? '分钟' : 'min read'}</span>
+        {post.data.tags.length > 0 && (
+          <span class="j-tags">{post.data.tags.map((tag) => `#${tag}`).join('  ')}</span>
+        )}
+      </div>
+    </header>
+
+    {
+      cover && (
+        <figure class="article-cover" data-reveal>
+          <Image
+            src={cover}
+            alt={post.data.coverAlt ?? post.data.title}
+            widths={[900, 1600, 2200]}
+            sizes="100vw"
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
+      )
+    }
+
+    <div class="article-body container-narrow">
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    <nav class="article-nav container" aria-label="Post navigation">
+      <a class:list={['article-nav-link', { 'is-empty': !prev }]} href={prev ? p(`/journal/${slugFromId(prev.id)}`) : '#'}>
+        <span class="nav-direction">{t('journal.previous')}</span>
+        <span class="nav-title">{prev?.data.title ?? '—'}</span>
+      </a>
+      <a class:list={['article-nav-link is-right', { 'is-empty': !next }]} href={next ? p(`/journal/${slugFromId(next.id)}`) : '#'}>
+        <span class="nav-direction">{t('journal.next')}</span>
+        <span class="nav-title">{next?.data.title ?? '—'}</span>
+      </a>
+    </nav>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    color: var(--ink-2);
+    transition: color 0.3s;
+  }
+
+  .back-link:hover {
+    color: var(--ink);
+  }
+
+  .article-head {
+    padding-top: clamp(3.5rem, 8vw, 6rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .article-head .label {
+    margin-bottom: 2rem;
+  }
+
+  .article-title {
+    max-width: 24ch;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem 2rem;
+    margin-top: 1.8rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .j-tags {
+    letter-spacing: 0.08em;
+  }
+
+  .article-cover {
+    width: var(--container);
+    margin: clamp(2rem, 5vw, 3.5rem) auto 0;
+  }
+
+  .article-cover img {
+    width: 100%;
+    max-height: 74vh;
+    object-fit: cover;
+  }
+
+  .article-body {
+    padding-block: clamp(2.8rem, 6vw, 4.5rem) clamp(3.5rem, 8vw, 6rem);
+  }
+
+  .article-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--section);
+  }
+
+  .article-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    transition: background 0.35s;
+  }
+
+  .article-nav-link:hover {
+    background: var(--paper-deep);
+  }
+
+  .article-nav-link.is-right {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .article-nav-link.is-empty {
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  .nav-direction {
+    font-size: 0.625rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .nav-title {
+    font-family: var(--serif);
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    line-height: 1.3;
+  }
+
+  @media (max-width: 640px) {
+    .article-nav {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,118 @@
+---
+import Layout from '../../components/Layout.astro';
+import Reveal from '../../components/Reveal.astro';
+import { SITE } from '../../config/site';
+import { translate, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const { lang = 'en' } = Astro.params;
+const L: Lang = lang === 'zh' ? 'zh' : 'en';
+const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
+
+const socials = Object.values(SITE.socials).filter((s) => s.url);
+---
+
+<Layout title={t('contact.title')} description={t('contact.intro')}>
+  <section class="contact section container">
+    <Reveal>
+      <p class="label">{t('nav.contact')}</p>
+      <h1 class="display-1 contact-title">{t('contact.title')}</h1>
+      <p class="contact-intro">{t('contact.intro')}</p>
+    </Reveal>
+
+    <Reveal delay={140}>
+      <a class="contact-mail" href={`mailto:${SITE.email}`}>
+        {SITE.email}
+        <span class="contact-arrow">→</span>
+      </a>
+      <p class="label contact-response">{t('contact.response')}</p>
+    </Reveal>
+
+    {
+      socials.length > 0 && (
+        <Reveal delay={220}>
+          <div class="contact-socials">
+            <p class="label">{t('contact.elsewhere')}</p>
+            <div class="social-list">
+              {socials.map((s) => (
+                <a class="link" href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.label}<span class="arrow">&nbsp;→</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      )
+    }
+  </section>
+</Layout>
+
+<style>
+  .contact {
+    padding-top: clamp(4.5rem, 10vw, 8rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .contact-title {
+    margin-block: 1.2rem 1.6rem;
+  }
+
+  .contact-intro {
+    max-width: 36rem;
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--ink-2);
+  }
+
+  .contact-mail {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1rem;
+    font-family: var(--serif);
+    font-variation-settings: 'opsz' 48;
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+    line-height: 1.2;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 0.6rem;
+    transition: color 0.3s, border-color 0.3s;
+    width: fit-content;
+  }
+
+  .contact-mail:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .contact-arrow {
+    font-family: var(--sans);
+    transition: transform 0.4s var(--ease);
+  }
+
+  .contact-mail:hover .contact-arrow {
+    transform: translateX(6px);
+  }
+
+  .contact-response {
+    margin-top: 1.2rem;
+  }
+
+  .contact-socials {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.2rem;
+  }
+</style>

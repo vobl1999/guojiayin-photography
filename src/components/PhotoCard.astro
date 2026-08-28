@@ -1,0 +1,71 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { Photo } from '../lib/gallery';
+
+interface Props {
+  photo: Photo;
+  index?: number;
+  priority?: boolean;
+  /** 为 true 时启用 Lightbox（相册集使用） */
+  lightbox?: boolean;
+  /** 非空时整卡链接到该地址（首页使用） */
+  link?: string;
+}
+
+const { photo, index, priority = false, lightbox = false, link = '' } = Astro.props;
+
+const big = lightbox
+  ? await getImage({ src: photo.src, width: 2000, quality: 88, format: 'jpeg' })
+  : null;
+
+const caption = photo.location
+  ? `${photo.title} — ${photo.location}`
+  : photo.title;
+---
+
+<figure class="photo-card" data-reveal>
+  {
+    link ? (
+      <a class="photo-frame photo-frame--link" href={link} aria-label={photo.title}>
+        <Image
+          class="photo-img"
+          src={photo.src}
+          alt={photo.title}
+          widths={[480, 800, 1200, 1600]}
+          sizes="(min-width: 1200px) 33vw, (min-width: 760px) 50vw, 92vw"
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      </a>
+    ) : (
+      <a
+        class="photo-frame"
+        href={lightbox ? `#${photo.base}` : `/${photo.base}/`}
+        {...(lightbox
+          ? {
+              'data-photo': '',
+              'data-src': big!.src,
+              'data-caption': caption,
+              'data-collection': photo.collection ?? '',
+            }
+          : {})}
+        aria-label={lightbox ? undefined : photo.title}
+      >
+        <Image
+          class="photo-img"
+          src={photo.src}
+          alt={photo.title}
+          widths={[480, 800, 1200, 1600]}
+          sizes="(min-width: 1200px) 33vw, (min-width: 760px) 50vw, 92vw"
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+        {index !== undefined && <span class="photo-index">{String(index + 1).padStart(2, '0')}</span>}
+      </a>
+    )
+  }
+  <figcaption class="photo-meta">
+    <span class="photo-title">{photo.title}</span>
+    {photo.location && <span class="photo-location">{photo.location}</span>}
+  </figcaption>
+</figure>

@@ -1,0 +1,47 @@
+---
+import { SITE } from '../config/site';
+import { langFromUrl, translate, type Lang } from '../i18n/ui';
+
+const lang: Lang = langFromUrl(Astro.url);
+const t = (key: Parameters<typeof translate>[1]) => translate(lang, key);
+const year = new Date().getFullYear();
+const base = lang === 'zh' ? '/zh' : '/en';
+
+const socials = Object.values(SITE.socials).filter((s) => s.url);
+const nav = [
+  { label: t('nav.portfolio'), href: `${base}/gallery` },
+  { label: t('nav.journal'), href: `${base}/journal` },
+  { label: t('nav.about'), href: `${base}/about` },
+  { label: t('nav.contact'), href: `${base}/contact` },
+];
+---
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <a class="wordmark" href={base}>{SITE.name}<span class="wordmark-dot">.</span></a>
+      <p class="footer-tagline">{SITE.tagline}</p>
+    </div>
+    <div>
+      <p class="footer-head">{t('footer.index')}</p>
+      <div class="footer-links">
+        {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      </div>
+    </div>
+    <div>
+      <p class="footer-head">{t('footer.contact')}</p>
+      <div class="footer-links">
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        {socials.map((s) => (
+          <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>
+        ))}
+        <a href="/rss.xml">RSS</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© {year} {SITE.legalName}. {t('footer.rights')}</span>
+    <span>{SITE.footerNote}</span>
+    <span>{SITE.colophon}</span>
+  </div>
+</footer>

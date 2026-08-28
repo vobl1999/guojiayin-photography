@@ -1,0 +1,94 @@
+---
+import { SITE } from '../config/site';
+import { langFromUrl, alternatePath, translate, type Lang } from '../i18n/ui';
+
+const lang: Lang = langFromUrl(Astro.url);
+const path = Astro.url.pathname;
+const altPath = alternatePath(path, lang);
+const base = lang === 'zh' ? '/zh' : '/en';
+
+const nav = [
+  { key: 'nav.portfolio' as const, href: '/gallery' },
+  { key: 'nav.journal' as const, href: '/journal' },
+  { key: 'nav.about' as const, href: '/about' },
+  { key: 'nav.contact' as const, href: '/contact' },
+].map((item) => ({
+  label: translate(lang, item.key),
+  href: `${base}${item.href}`,
+  active: path === `${base}${item.href}`,
+}));
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href={base} aria-label="Home">
+      {SITE.name}<span class="wordmark-dot">.</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {
+        nav.map((item, i) => (
+          <a class:list={['nav-link', { 'is-active': item.active }]} href={item.href}>
+            <span class="nav-num">{String(i + 1).padStart(2, '0')}</span>
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="lang-switch" href={altPath} aria-label="Switch language">
+        {lang === 'zh' ? 'EN' : '中文'}
+      </a>
+    </nav>
+
+    <button class="menu-toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label={translate(lang, 'menu.open')}>
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu aria-hidden="true">
+    <nav class="mobile-nav" aria-label="Mobile">
+      {
+        nav.map((item, i) => (
+          <a class="mobile-link" href={item.href} data-menu-close>
+            <span class="mobile-num">{String(i + 1).padStart(2, '0')}</span>
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="mobile-link" href={altPath} data-menu-close>
+        <span class="mobile-num">·</span>
+        {lang === 'zh' ? 'English' : '中文'}
+      </a>
+    </nav>
+    <div class="mobile-meta">
+      <p class="label">{SITE.tagline}</p>
+      <p class="mobile-mail"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+
+  function openMenu(open: boolean) {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menu.setAttribute('aria-hidden', String(!open));
+    menu.classList.toggle('is-open', open);
+    document.body.classList.toggle('menu-open', open);
+  }
+
+  toggle?.addEventListener('click', () => {
+    openMenu(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  document.querySelectorAll('[data-menu-close]').forEach((l) =>
+    l.addEventListener('click', () => openMenu(false))
+  );
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') openMenu(false);
+  });
+</script>

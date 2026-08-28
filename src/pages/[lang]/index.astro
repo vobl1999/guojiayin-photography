@@ -1,0 +1,17 @@
+---
+import Layout from '../../components/Layout.astro';
+import Home from '../../components/Home.astro';
+import { SITE } from '../../config/site';
+import { type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
+}
+
+const { lang = 'en' } = Astro.params;
+const L: Lang = lang === 'zh' ? 'zh' : 'en';
+---
+
+<Layout title={SITE.name} description={SITE.description}>
+  <Home lang={L} />
+</Layout>
