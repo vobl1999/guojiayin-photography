@@ -2,6 +2,8 @@ import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { Lang } from '../i18n/ui';
 import { basename } from './utils';
+import sharp from 'sharp';
+import { join } from 'node:path';
 
 /**
  * 相册数据源：
@@ -27,6 +29,8 @@ export interface Photo {
   collectionZh?: string;
   featured: boolean;
   camera?: string;
+  /** 模糊占位图（data URI），图片加载前显示 */
+  lqip: string;
 }
 
 function toTitle(name: string): string {
@@ -42,6 +46,19 @@ function toTitle(name: string): string {
  */
 function normalizeName(name: string): string {
   return name.toLowerCase().replace(/\s+/g, '-');
+}
+
+/** 生成 LQIP：24px 模糊 webp → base64 data URI */
+async function makeLqip(absPath: string): Promise<string> {
+  try {
+    const buf = await sharp(absPath)
+      .resize(24, 30, { fit: 'cover' })
+      .webp({ quality: 28 })
+      .toBuffer();
+    return `data:image/webp;base64,${buf.toString('base64')}`;
+  } catch {
+    return '';
+  }
 }
 
 export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
@@ -68,6 +85,7 @@ export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
       collectionZh: d?.collectionZh,
       featured: d?.featured ?? false,
       camera: d?.camera,
+      lqip: await makeLqip(join(process.cwd(), path.replace(/^\//, ''))),
     });
   }
 

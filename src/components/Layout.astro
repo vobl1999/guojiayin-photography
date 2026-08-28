@@ -81,6 +81,8 @@ const personLd = JSON.stringify({
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
 
     <script is:inline>
+      // 标记 JS 可用（无 JS 时图片直接显示，避免渐变占位卡住）
+      document.documentElement.classList.add('js');
       // 防止暗黑模式插件破坏高级设计
       try {
         if (localStorage.theme === 'dark') localStorage.removeItem('theme');
@@ -108,6 +110,13 @@ const personLd = JSON.stringify({
         { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }
       );
       document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      // 图片模糊渐显：加载完成后淡入
+      document.querySelectorAll('img.photo-img').forEach((img) => {
+        const mark = () => img.classList.add('is-loaded');
+        if (img.complete) mark();
+        else img.addEventListener('load', mark, { once: true });
+      });
     </script>
   </body>
 </html>

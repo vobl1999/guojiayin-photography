@@ -26,7 +26,12 @@ const caption = photo.location
 <figure class="photo-card" data-reveal>
   {
     link ? (
-      <a class="photo-frame photo-frame--link" href={link} aria-label={photo.title}>
+      <a
+        class="photo-frame photo-frame--link"
+        href={link}
+        aria-label={photo.title}
+        style={photo.lqip ? `background-image:url(${photo.lqip})` : undefined}
+      >
         <Image
           class="photo-img"
           src={photo.src}
@@ -41,6 +46,7 @@ const caption = photo.location
       <a
         class="photo-frame"
         href={lightbox ? `#${photo.base}` : `/${photo.base}/`}
+        style={photo.lqip ? `background-image:url(${photo.lqip})` : undefined}
         {...(lightbox
           ? {
               'data-photo': '',

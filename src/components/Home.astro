@@ -30,8 +30,14 @@ const works = photos.slice(1, 5);
 {
   statement && (
     <section class="container statement" data-reveal>
-      <a href={p('/gallery')} class="statement-link" aria-label="Portfolio">
+      <a
+        href={p('/gallery')}
+        class="statement-link"
+        aria-label="Portfolio"
+        style={statement.lqip ? `background-image:url(${statement.lqip})` : undefined}
+      >
         <Image
+          class="photo-img"
           src={statement.src}
           alt={statement.title}
           widths={[800, 1400, 2000]}
