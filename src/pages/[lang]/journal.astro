@@ -44,7 +44,7 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags))];
         <p class="journal-empty">{L === 'zh' ? '还没有文章，去 src/content/posts/ 写一篇吧。' : 'No essays yet — add a markdown file to src/content/posts/.'}</p>
       ) : (
         posts.map((post, i) => (
-          <div class="journal-item" data-tags={post.data.tags.join(' ')}>
+          <div class="journal-item" data-tags={post.data.tags.join('|')}>
             <Reveal as="div" delay={Math.min(i * 60, 240)}>
               <a class="journal-row" href={p(`/journal/${slugFromId(post.id)}`)}>
                 <span class="j-num">{String(i + 1).padStart(2, '0')}</span>
@@ -77,7 +77,7 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags))];
       chips.forEach((c) => c.classList.toggle('is-active', c === chip));
       const f = chip.dataset.filter ?? 'all';
       items.forEach((el) => {
-        const tags = (el.dataset.tags ?? '').split(' ').filter(Boolean);
+        const tags = (el.dataset.tags ?? '').split('|').filter(Boolean);
         el.classList.toggle('is-hidden', f !== 'all' && !tags.includes(f));
       });
     });

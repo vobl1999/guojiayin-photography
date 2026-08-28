@@ -17,6 +17,7 @@ export async function GET(context: APIContext) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
+      content: post.body ?? undefined,
       link: `${post.data.lang === 'zh' ? '/zh' : '/en'}/journal/${slugFromId(post.id)}`,
     })),
   });

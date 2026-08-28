@@ -184,6 +184,18 @@ const personLd = JSON.stringify({
       };
       applyMetaTheme();
       syncToggleAria();
+      // 用户没手动选过主题时，跟随系统深浅色实时切换
+      try {
+        if (!localStorage.getItem('theme-vobl')) {
+          window
+            .matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', (e) => {
+              document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+              applyMetaTheme();
+              syncToggleAria();
+            });
+        }
+      } catch {}
       toggleButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           const next =
