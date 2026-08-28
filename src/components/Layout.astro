@@ -83,10 +83,16 @@ const personLd = JSON.stringify({
     <script is:inline>
       // 标记 JS 可用（无 JS 时图片直接显示，避免渐变占位卡住）
       document.documentElement.classList.add('js');
-      // 防止暗黑模式插件破坏高级设计
-      try {
-        if (localStorage.theme === 'dark') localStorage.removeItem('theme');
-      } catch {}
+      // 主题：优先用户选择，其次系统偏好（在绘制前应用，避免闪烁）
+      (function () {
+        try {
+          var t = localStorage.getItem('theme-vobl');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
     </script>
   </head>
   <body>
@@ -116,6 +122,26 @@ const personLd = JSON.stringify({
         const mark = () => img.classList.add('is-loaded');
         if (img.complete) mark();
         else img.addEventListener('load', mark, { once: true });
+      });
+
+      // 主题切换 + 浏览器栏配色同步
+      const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+      const applyMetaTheme = () => {
+        if (!metaTheme) return;
+        metaTheme.content =
+          document.documentElement.getAttribute('data-theme') === 'dark' ? '#131110' : '#f4f1ea';
+      };
+      applyMetaTheme();
+      document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const next =
+            document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          try {
+            localStorage.setItem('theme-vobl', next);
+          } catch {}
+          applyMetaTheme();
+        });
       });
     </script>
   </body>

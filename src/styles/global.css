@@ -34,6 +34,22 @@
   --dur: 0.9s;
 }
 
+/* ── 暗色模式 ─────────────────────────────────────────────── */
+[data-theme='dark'] {
+  --paper: #131110;
+  --paper-deep: #1d1a17;
+  --ink: #ece7dd;
+  --ink-2: rgba(236, 231, 221, 0.62);
+  --ink-3: rgba(236, 231, 221, 0.36);
+  --line: rgba(236, 231, 221, 0.14);
+  --line-strong: rgba(236, 231, 221, 0.3);
+  --gold: #c39a6a;
+}
+
+[data-theme='dark'] body::before {
+  opacity: 0.06;
+}
+
 /* ── Reset ─────────────────────────────────────────────────── */
 *,
 *::before,
@@ -416,6 +432,40 @@ html.js img.photo-img.is-loaded {
   color: var(--ink);
 }
 
+/* 主题切换按钮 */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: clamp(1.2rem, 2.6vw, 2rem);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-2);
+  transition: color 0.3s;
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+}
+
+.theme-toggle svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.theme-toggle .icon-sun {
+  display: none;
+}
+
+[data-theme='dark'] .theme-toggle .icon-sun {
+  display: block;
+}
+
+[data-theme='dark'] .theme-toggle .icon-moon {
+  display: none;
+}
+
 .menu-toggle {
   display: none;
   flex-direction: column;
@@ -515,6 +565,12 @@ html.js img.photo-img.is-loaded {
 .mobile-mail {
   font-family: var(--serif);
   font-size: 1.05rem;
+}
+
+.mobile-theme-toggle {
+  margin-left: 0;
+  margin-top: 0.5rem;
+  width: fit-content;
 }
 
 body.menu-open {
