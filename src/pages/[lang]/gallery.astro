@@ -74,7 +74,7 @@ const galleryLd = JSON.stringify({
               data-collection={photo.collection ?? ''}
               style={`--reveal-delay:${(i % 3) * 90}ms`}
             >
-              <PhotoCard photo={photo} index={i} priority={i < 2} lightbox />
+              <PhotoCard photo={photo} index={i} lightbox />
             </div>
           ))
         }

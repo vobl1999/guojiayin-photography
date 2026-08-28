@@ -124,12 +124,40 @@ const personLd = JSON.stringify({
       );
       document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
 
-      // 图片模糊渐显：加载完成后淡入
-      document.querySelectorAll('img.photo-img').forEach((img) => {
-        const mark = () => img.classList.add('is-loaded');
-        if (img.complete) mark();
-        else img.addEventListener('load', mark, { once: true });
+      // ── 图片延迟加载：先让网页渲染完，再开始拉图片 ──────────
+      // 1) 立即摘掉所有照片的 src/srcset（页面以模糊占位图呈现，秒进）
+      // 2) 等页面 load 后，用 IntersectionObserver 在图片接近视口时才恢复
+      const photos = Array.from(document.querySelectorAll<HTMLImageElement>('img.photo-img'));
+      photos.forEach((img) => {
+        img.dataset.srcRaw = img.getAttribute('src') || '';
+        img.dataset.srcsetRaw = img.getAttribute('srcset') || '';
+        img.removeAttribute('src');
+        img.removeAttribute('srcset');
+        // 加载完成后淡入
+        img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
       });
+
+      const startImageLoading = () => {
+        const imgIo = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              const img = e.target as HTMLImageElement;
+              if (img.dataset.srcRaw) img.src = img.dataset.srcRaw;
+              if (img.dataset.srcsetRaw) img.srcset = img.dataset.srcsetRaw;
+              imgIo.unobserve(img);
+            });
+          },
+          { rootMargin: '0px 0px 640px 0px' }
+        );
+        photos.forEach((img) => imgIo.observe(img));
+      };
+
+      if (document.readyState === 'complete') {
+        setTimeout(startImageLoading, 120);
+      } else {
+        window.addEventListener('load', () => setTimeout(startImageLoading, 120), { once: true });
+      }
 
       // 主题切换 + 浏览器栏配色同步
       const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
