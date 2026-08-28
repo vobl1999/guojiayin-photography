@@ -143,6 +143,26 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* 渲染性能：视口外的网格/列表项跳过渲染，滚动到附近才绘制 */
+.gallery-grid .grid-item,
+.works-grid .works-item,
+.journal-list .journal-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+/* 移动端：关闭颗粒与磨砂（省电省 GPU） */
+@media (max-width: 640px) {
+  body::before {
+    display: none;
+  }
+
+  .site-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 /* ── Typography ────────────────────────────────────────────── */
 .serif {
   font-family: var(--serif);
