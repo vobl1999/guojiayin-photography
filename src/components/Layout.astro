@@ -22,6 +22,18 @@ const fullTitle = title.includes(SITE.name) ? title : `${title} — ${SITE.name}
 const ogImage = image ?? SITE.ogImage;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, SITE.url).href;
+const socials = Object.values(SITE.socials).filter((s) => s.url);
+
+// JSON-LD：让搜索引擎把「Guo Jiayin」和「郭嘉胤」关联到本站
+const personLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.name,
+  alternateName: SITE.nameZh,
+  url: SITE.url,
+  email: SITE.email,
+  sameAs: socials.map((s) => s.url),
+});
 ---
 
 <!doctype html>
@@ -44,6 +56,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, SITE.
     {ogImage && <meta property="og:image" content={ogImageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
     {noindex && <meta name="robots" content="noindex" />}
+    <script type="application/ld+json" set:html={personLd} />
 
     <script is:inline>
       // 防止暗黑模式插件破坏高级设计

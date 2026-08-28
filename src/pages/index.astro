@@ -2,9 +2,9 @@
 // 根路径：直接显示英文首页（/en 是同一页面的正式地址）
 import Layout from '../components/Layout.astro';
 import Home from '../components/Home.astro';
-import { SITE } from '../config/site';
+import { translate } from '../i18n/ui';
 ---
 
-<Layout title={SITE.name} description={SITE.description}>
+<Layout title={translate('en', 'home.title')} description={translate('en', 'hero.sub')}>
   <Home lang="en" />
 </Layout>

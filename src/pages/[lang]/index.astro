@@ -1,8 +1,7 @@
 ---
 import Layout from '../../components/Layout.astro';
 import Home from '../../components/Home.astro';
-import { SITE } from '../../config/site';
-import { type Lang } from '../../i18n/ui';
+import { translate, type Lang } from '../../i18n/ui';
 
 export function getStaticPaths() {
   return [{ params: { lang: 'en' } }, { params: { lang: 'zh' } }];
@@ -12,6 +11,6 @@ const { lang = 'en' } = Astro.params;
 const L: Lang = lang === 'zh' ? 'zh' : 'en';
 ---
 
-<Layout title={SITE.name} description={SITE.description}>
+<Layout title={translate(L, 'home.title')} description={translate(L, 'hero.sub')}>
   <Home lang={L} />
 </Layout>

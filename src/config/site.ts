@@ -8,13 +8,14 @@
 export const SITE = {
   /* ── 品牌 ─────────────────────────────────────────────── */
   name: 'Guo Jiayin', // 左上角与页脚的署名
+  nameZh: '郭嘉胤', // 中文名（用于 SEO：搜中文名也能找到）
   legalName: 'Guo Jiayin', // 版权声明中的名字
   tagline: 'Photography & Journal',
   url: 'https://www.vobl.cn', // ⚠️ 部署后改成你的真实域名
 
   /* ── SEO ──────────────────────────────────────────────── */
   description:
-    "Guo Jiayin — an amateur photographer's quiet corner for photographs and words: landscape, portrait and street photography, plus occasional essays on light.",
+    'Guo Jiayin (郭嘉胤) — 业余摄影师的个人网站：风景、街头与建筑摄影，以及关于观看的笔记。An amateur photographer\'s quiet corner for photographs and words: landscape, portrait and street photography, plus occasional essays on light.',
   // 社交分享图：把一张 1200×630 的 jpg 放到 public/og-default.jpg 即可启用，
   // 留空则不输出 og:image
   ogImage: '',
