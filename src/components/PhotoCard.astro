@@ -17,6 +17,9 @@ const { photo, index, priority = false, lightbox = false, link = '' } = Astro.pr
 const big = lightbox
   ? await getImage({ src: photo.src, width: 2000, quality: 88, format: 'jpeg' })
   : null;
+const thumb = lightbox
+  ? await getImage({ src: photo.src, width: 240, quality: 72, format: 'webp' })
+  : null;
 
 const caption = photo.location
   ? `${photo.title} — ${photo.location}`
@@ -51,6 +54,7 @@ const caption = photo.location
           ? {
               'data-photo': '',
               'data-src': big!.src,
+              'data-thumb': thumb!.src,
               'data-caption': caption,
               'data-collection': photo.collection ?? '',
               'data-camera': photo.camera ?? '',

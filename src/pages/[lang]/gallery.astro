@@ -96,6 +96,7 @@ const galleryLd = JSON.stringify({
     gridItems.forEach((el) => {
       el.classList.toggle('is-hidden', filter !== 'all' && el.dataset.collection !== filter);
     });
+    buildStrip();
   }
 
   chips.forEach((chip) => {
@@ -131,15 +132,37 @@ const galleryLd = JSON.stringify({
       <img class="lb-img" alt="" />
     </figure>
     <span class="lb-camera"></span>
-    <span class="lb-count"></span>`;
+    <span class="lb-count"></span>
+    <div class="lb-strip"></div>`;
   document.body.appendChild(lb);
 
   const lbImg = lb.querySelector<HTMLImageElement>('.lb-img')!;
   const lbCount = lb.querySelector<HTMLElement>('.lb-count')!;
   const lbCamera = lb.querySelector<HTMLElement>('.lb-camera')!;
+  const lbStrip = lb.querySelector<HTMLElement>('.lb-strip')!;
   let current = 0;
   let lbOpen = false;
   let lastTrigger: HTMLElement | null = null;
+
+  // 胶片条：按可见列表生成缩略图
+  function buildStrip() {
+    lbStrip.innerHTML = '';
+    const list = visible.filter((el) => el.querySelector('[data-photo]'));
+    list.forEach((el, i) => {
+      const card = el.querySelector<HTMLElement>('[data-photo]')!;
+      const btn = document.createElement('button');
+      btn.className = 'lb-thumb';
+      btn.setAttribute('aria-label', `${i + 1}`);
+      const img = document.createElement('img');
+      img.src = card.dataset.thumb ?? card.dataset.src ?? '';
+      img.alt = '';
+      img.loading = 'lazy';
+      btn.appendChild(img);
+      btn.addEventListener('click', () => show(i));
+      lbStrip.appendChild(btn);
+    });
+  }
+  buildStrip();
 
   // 缩放状态（点击/滚轮放大看细节）
   let zoom = 1;
@@ -191,6 +214,13 @@ const galleryLd = JSON.stringify({
     lbCamera.style.display = card.dataset.camera ? '' : 'none';
     setZoom(1);
     preloadAdjacent(list, current);
+    // 胶片条高亮当前项并居中
+    Array.from(lbStrip.children).forEach((c, i) => c.classList.toggle('is-active', i === current));
+    (lbStrip.children[current] as HTMLElement | undefined)?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
   }
 
   function openLightbox(index: number) {
@@ -368,7 +398,7 @@ const galleryLd = JSON.stringify({
 
   :global(.lb-camera) {
     position: fixed;
-    bottom: 3.1rem;
+    bottom: 7rem;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.625rem;
@@ -380,7 +410,7 @@ const galleryLd = JSON.stringify({
 
   :global(.lb-count) {
     position: fixed;
-    bottom: 1.4rem;
+    bottom: 5.6rem;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.6875rem;
@@ -388,6 +418,53 @@ const galleryLd = JSON.stringify({
     font-variant-numeric: tabular-nums;
     color: rgba(244, 241, 234, 0.55);
     pointer-events: none;
+  }
+
+  :global(.lb-strip) {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    max-width: 96vw;
+    padding: 0.9rem 1rem 1.1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    z-index: 301;
+  }
+
+  :global(.lb-strip::-webkit-scrollbar) {
+    display: none;
+  }
+
+  :global(.lb-thumb) {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 2px;
+    overflow: hidden;
+    opacity: 0.4;
+    border: 1px solid transparent;
+    padding: 0;
+    transition: opacity 0.3s, border-color 0.3s, transform 0.3s;
+  }
+
+  :global(.lb-thumb img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  :global(.lb-thumb:hover) {
+    opacity: 0.8;
+  }
+
+  :global(.lb-thumb.is-active) {
+    opacity: 1;
+    border-color: rgba(244, 241, 234, 0.85);
+    transform: translateY(-3px);
   }
 
   :global(.lb-btn) {
