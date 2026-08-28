@@ -125,16 +125,25 @@ const personLd = JSON.stringify({
       document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
 
       // ── 图片延迟加载：先让网页渲染完，再开始拉图片 ──────────
-      // 1) 立即摘掉所有照片的 src/srcset（页面以模糊占位图呈现，秒进）
+      // 1) 立即摘掉所有照片的 src/srcset（页面以模糊缩略图呈现，秒进）
       // 2) 等页面 load 后，用 IntersectionObserver 在图片接近视口时才恢复
       const photos = Array.from(document.querySelectorAll<HTMLImageElement>('img.photo-img'));
+      const loadStartedAt = performance.now();
       photos.forEach((img) => {
         img.dataset.srcRaw = img.getAttribute('src') || '';
         img.dataset.srcsetRaw = img.getAttribute('srcset') || '';
         img.removeAttribute('src');
         img.removeAttribute('srcset');
-        // 加载完成后淡入
-        img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+        // 加载完成后淡入；保证模糊缩略图至少展示一小会儿（约 240ms），
+        // 即使图片瞬间加载完也能看到"模糊 → 清晰"的过程
+        img.addEventListener(
+          'load',
+          () => {
+            const wait = Math.max(0, 240 - (performance.now() - loadStartedAt));
+            setTimeout(() => img.classList.add('is-loaded'), wait);
+          },
+          { once: true }
+        );
       });
 
       const startImageLoading = () => {

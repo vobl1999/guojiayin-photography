@@ -48,12 +48,12 @@ function normalizeName(name: string): string {
   return name.toLowerCase().replace(/\s+/g, '-');
 }
 
-/** 生成 LQIP：24px 模糊 webp → base64 data URI */
+/** 生成 LQIP：48px 模糊 webp → base64 data URI */
 async function makeLqip(absPath: string): Promise<string> {
   try {
     const buf = await sharp(absPath)
-      .resize(24, 30, { fit: 'cover' })
-      .webp({ quality: 28 })
+      .resize(48, 60, { fit: 'cover' })
+      .webp({ quality: 42 })
       .toBuffer();
     return `data:image/webp;base64,${buf.toString('base64')}`;
   } catch {
