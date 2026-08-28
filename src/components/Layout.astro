@@ -74,8 +74,15 @@ const personLd = JSON.stringify({
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={lang === 'zh' ? 'zh_CN' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'zh' ? 'en_US' : 'zh_CN'} />
     {ogImage && <meta property="og:image" content={ogImageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {SITE.socials.x?.url && (
+      <meta name="twitter:creator" content={`@${SITE.socials.x.url.replace(/\/+$/, '').split('/').pop()}`} />
+    )}
     {noindex && <meta name="robots" content="noindex" />}
     <script type="application/ld+json" set:html={personLd} />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
