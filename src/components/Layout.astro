@@ -4,7 +4,7 @@ import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import '../styles/global.css';
 import { SITE } from '../config/site';
-import { langFromUrl, type Lang } from '../i18n/ui';
+import { langFromUrl, alternatePath, type Lang } from '../i18n/ui';
 import SiteHeader from './SiteHeader.astro';
 import SiteFooter from './SiteFooter.astro';
 
@@ -23,6 +23,14 @@ const ogImage = image ?? SITE.ogImage;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, SITE.url).href;
 const socials = Object.values(SITE.socials).filter((s) => s.url);
+
+// hreflang：中英文页面的互认链接（双语 SEO）
+const pathname = Astro.url.pathname;
+const enHref = new URL(
+  lang === 'zh' ? alternatePath(pathname, 'zh') : pathname === '/' ? '/en' : pathname,
+  SITE.url
+).href;
+const zhHref = new URL(lang === 'zh' ? pathname : alternatePath(pathname, 'en'), SITE.url).href;
 
 // JSON-LD：让搜索引擎把「Guo Jiayin」和「郭嘉胤」关联到本站
 const personLd = JSON.stringify({
@@ -46,6 +54,10 @@ const personLd = JSON.stringify({
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="zh" href={zhHref} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/', SITE.url).href} />
+    <meta name="theme-color" content="#f4f1ea" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Journal`} href="/rss.xml" />
 
     <meta property="og:type" content={ogType} />

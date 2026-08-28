@@ -187,6 +187,18 @@ git push -u origin main
 
 ---
 
+## 上线清单（部署后逐项检查）
+
+1. **Cloudflare Pages 连接仓库**：Workers & Pages → Create → Pages → Connect to Git → `guojiayin-photography` → Framework **Astro**、输出目录 `dist`、Node **22** → Deploy
+2. **绑定域名**：Custom domains → 添加 `www.vobl.cn`（CNAME 指向 `xxx.pages.dev`，记得删掉旧的 www A 记录）
+3. **验证访问**：`https://www.vobl.cn` 打开英文首页；中文系统浏览器应自动跳到 `/zh`（系统语言检测由边缘函数实现）
+4. **提交收录**：
+   - Google Search Console（DNS TXT 验证）→ 提交 `https://www.vobl.cn/sitemap-index.xml` → 网址检查请求收录
+   - Bing Webmaster Tools（可从 GSC 一键导入）→ 提交同一 sitemap
+5. **搜一下自己**：等 1–4 周后搜「郭嘉胤」「Guo Jiayin」验证收录
+
+---
+
 ## 技术栈
 
 Astro 5 · TypeScript · Fraunces & Inter (fontsource 自托管) · sharp 图片优化 · Cloudflare Pages · 无任何运行时依赖的轻量 JS

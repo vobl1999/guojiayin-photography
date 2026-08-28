@@ -112,12 +112,26 @@ const count = photos.length;
     </button>
     <figure class="lb-figure">
       <img class="lb-img" alt="" />
-    </figure>`;
+    </figure>
+    <span class="lb-count"></span>`;
   document.body.appendChild(lb);
 
   const lbImg = lb.querySelector<HTMLImageElement>('.lb-img')!;
+  const lbCount = lb.querySelector<HTMLElement>('.lb-count')!;
   let current = 0;
   let lbOpen = false;
+
+  // 预加载相邻图片，切换零等待
+  function preloadAdjacent(list: HTMLElement[], i: number) {
+    for (const offset of [-1, 1]) {
+      const el = list[((i + offset) % list.length + list.length) % list.length];
+      const src = el?.querySelector<HTMLElement>('[data-photo]')?.dataset.src;
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    }
+  }
 
   function show(index: number) {
     const list = visible.filter((el) => el.querySelector('[data-photo]'));
@@ -126,6 +140,8 @@ const count = photos.length;
     const card = list[current].querySelector<HTMLElement>('[data-photo]')!;
     lbImg.src = card.dataset.src ?? '';
     lbImg.alt = card.dataset.caption ?? '';
+    lbCount.textContent = `${current + 1} / ${list.length}`;
+    preloadAdjacent(list, current);
   }
 
   function openLightbox(index: number) {
@@ -288,6 +304,18 @@ const count = photos.length;
     max-height: 86vh;
     object-fit: contain;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  }
+
+  :global(.lb-count) {
+    position: fixed;
+    bottom: 1.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(244, 241, 234, 0.55);
+    pointer-events: none;
   }
 
   :global(.lb-btn) {
