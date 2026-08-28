@@ -70,15 +70,7 @@ const works = photos.slice(1, 5);
         }
         {
           works.length >= 4 && (
-            <div class="hassel-mark" data-reveal aria-hidden="true">
-              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5">
-                <rect x="8" y="14" width="48" height="34" rx="3" />
-                <circle cx="32" cy="31" r="10.5" />
-                <path d="M26 6h12v8H26z" fill="currentColor" stroke="none" />
-                <circle cx="32" cy="31" r="3.5" fill="currentColor" stroke="none" />
-              </svg>
-              <span class="hassel-word">HASSELBLAD</span>
-            </div>
+            <div class="hassel-mark" data-reveal aria-hidden="true"></div>
           )
         }
       </div>
@@ -190,7 +182,8 @@ const works = photos.slice(1, 5);
     aspect-ratio: 3 / 2;
   }
 
-  /* 哈苏商标：嵌在最后两张照片错开形成的左下角空隙里 */
+  /* 哈苏官方字标：嵌在最后两张照片错开形成的左下角空隙里
+     字形作为 CSS 遮罩，填充色用主题墨色 → 浅色黑、深色白自动跟随 */
   .hassel-mark {
     grid-row: 2;
     grid-column: 1 / span 7;
@@ -198,27 +191,17 @@ const works = photos.slice(1, 5);
     justify-self: start;
     /* 负外边距：与右侧高图的下移量一致，底缘对齐高图底边 */
     margin-bottom: calc(clamp(2rem, 5vw, 4.5rem) * -1);
-    width: clamp(3rem, 5.5vw, 4.5rem);
-    color: var(--ink);
-    opacity: 0.92;
+    width: clamp(8rem, 16vw, 13rem);
+    aspect-ratio: 76.14 / 5.089;
+    background-color: var(--ink);
+    -webkit-mask-image: url('/hasselblad-mark.svg');
+    mask-image: url('/hasselblad-mark.svg');
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    opacity: 0.95;
     pointer-events: none;
-  }
-
-  .hassel-mark svg {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .hassel-word {
-    display: block;
-    margin-top: 0.55rem;
-    font-size: 0.5rem;
-    font-weight: 500;
-    letter-spacing: 0.32em;
-    text-align: center;
-    text-transform: uppercase;
-    color: inherit;
   }
 
   @media (max-width: 860px) {
