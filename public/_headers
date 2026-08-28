@@ -1,12 +1,14 @@
 /*
   Cloudflare Pages 响应头与缓存策略
-  优化后的图片在 /_astro/ 下（文件名带哈希），可永久缓存
+  Pages 每次新部署都会自动清空边缘缓存，因此 HTML 也可以放心长缓存：
+  国内访客重复访问时全部命中边缘节点，速度大幅提升
 */
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 /favicon.svg
