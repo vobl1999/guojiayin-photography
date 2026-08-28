@@ -1,16 +1,21 @@
 ---
 import Layout from '../components/Layout.astro';
 import Reveal from '../components/Reveal.astro';
-import { translate } from '../i18n/ui';
 ---
 
-<Layout title="404" noindex>
+<Layout title="404 — Not Found" noindex>
   <section class="notfound container">
     <Reveal>
-      <p class="label">404</p>
-      <h1 class="display-1">{translate('en', '404.title')}</h1>
-      <p class="nf-text">{translate('en', '404.text')}</p>
-      <a class="link" href="/en">{translate('en', '404.cta')}<span class="arrow">&nbsp;→</span></a>
+      <p class="label">404 — Not Found</p>
+      <h1 class="display-1">这里什么都没有。</h1>
+      <p class="nf-text">
+        The page you are looking for has wandered off.<br />
+        你寻找的页面已经走丢了。
+      </p>
+      <div class="nf-links">
+        <a class="link" href="/en">English Home<span class="arrow">&nbsp;→</span></a>
+        <a class="link" href="/zh">中文首页<span class="arrow">&nbsp;→</span></a>
+      </div>
     </Reveal>
   </section>
 </Layout>
@@ -19,9 +24,15 @@ import { translate } from '../i18n/ui';
   .nf-text {
     max-width: 26rem;
     font-family: var(--serif);
-    font-size: 1.2rem;
-    line-height: 1.8;
+    font-size: 1.15rem;
+    line-height: 1.9;
     color: var(--ink-2);
     margin-block: 1.6rem 2.2rem;
+  }
+
+  .nf-links {
+    display: flex;
+    gap: 2.2rem;
+    flex-wrap: wrap;
   }
 </style>

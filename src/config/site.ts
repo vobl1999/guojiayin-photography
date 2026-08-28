@@ -16,9 +16,8 @@ export const SITE = {
   /* ── SEO ──────────────────────────────────────────────── */
   description:
     'Guo Jiayin (郭嘉胤) — 业余摄影师的个人网站：风景、街头与建筑摄影，以及关于观看的笔记。An amateur photographer\'s quiet corner for photographs and words: landscape, portrait and street photography, plus occasional essays on light.',
-  // 社交分享图：把一张 1200×630 的 jpg 放到 public/og-default.jpg 即可启用，
-  // 留空则不输出 og:image
-  ogImage: '',
+  // 社交分享图：已由 scripts/make-og.mjs 从精选照片生成（1200×630）
+  ogImage: '/og-default.jpg',
 
   /* ── 联系方式与社交 ────────────────────────────────────── */
   email: 'gjy@vobl.cn',
