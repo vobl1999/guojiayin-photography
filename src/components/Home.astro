@@ -54,7 +54,7 @@ const works = photos.slice(1, 5);
           works.map((photo, i) => (
             <div
               class:list={['works-item', i % 2 === 0 ? 'works-item--wide' : 'works-item--tall']}
-              style={`--delay:${i * 90}ms`}
+              style={`--reveal-delay:${i * 90}ms`}
             >
               <PhotoCard photo={photo} index={i} link={p('/gallery')} />
             </div>
