@@ -47,6 +47,7 @@ const caption = photo.location
               'data-src': big!.src,
               'data-caption': caption,
               'data-collection': photo.collection ?? '',
+              'data-camera': photo.camera ?? '',
             }
           : {})}
         aria-label={lightbox ? undefined : photo.title}
