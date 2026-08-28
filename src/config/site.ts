@@ -10,7 +10,7 @@ export const SITE = {
   name: 'Guo Jiayin', // 左上角与页脚的署名
   legalName: 'Guo Jiayin', // 版权声明中的名字
   tagline: 'Photography & Journal',
-  url: 'https://guojiayin.pages.dev', // ⚠️ 部署后改成你的真实域名
+  url: 'https://www.vobl.cn', // ⚠️ 部署后改成你的真实域名
 
   /* ── SEO ──────────────────────────────────────────────── */
   description:

@@ -138,6 +138,7 @@ git push -u origin main
    - **Build output directory:** `dist`
    - **Node.js 版本：** 选 20 或 22
 4. 点击 **Save and Deploy**，等一两分钟，`https://xxx.pages.dev` 就上线了
+5. 绑定自己的域名 `www.vobl.cn`：Pages 项目 → **Custom domains** → 添加域名，按提示把 DNS 里的 www 记录改成 CNAME 指向 `xxx.pages.dev` 即可（vobl.cn 已在 Cloudflare 托管，点一下自动配置）
 
 之后每次 `git push` 都会自动重新构建部署。
 
