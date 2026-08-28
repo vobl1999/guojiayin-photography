@@ -38,20 +38,35 @@ const description = post.data.description;
 const ogImage = coverUrl ? new URL(coverUrl, import.meta.env.SITE).href : undefined;
 const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
 
-// 文章结构化数据（BlogPosting）
-const articleLd = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: post.data.title,
-  description: post.data.description,
-  datePublished: post.data.date.toISOString(),
-  ...(post.data.updated ? { dateModified: post.data.updated.toISOString() } : {}),
-  author: { '@type': 'Person', name: SITE.name, alternateName: SITE.nameZh, url: SITE.url },
-  publisher: { '@type': 'Person', name: SITE.name, url: SITE.url },
-  mainEntityOfPage: pageUrl,
-  ...(ogImage ? { image: ogImage } : {}),
-  inLanguage: L,
-});
+// 文章结构化数据（BlogPosting + 面包屑）
+const articleLd = JSON.stringify([
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.date.toISOString(),
+    ...(post.data.updated ? { dateModified: post.data.updated.toISOString() } : {}),
+    author: { '@type': 'Person', name: SITE.name, alternateName: SITE.nameZh, url: SITE.url },
+    publisher: { '@type': 'Person', name: SITE.name, url: SITE.url },
+    mainEntityOfPage: pageUrl,
+    ...(ogImage ? { image: ogImage } : {}),
+    inLanguage: L,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: t('journal.title'),
+        item: new URL(p('/journal'), SITE.url).href,
+      },
+      { '@type': 'ListItem', position: 2, name: post.data.title, item: pageUrl },
+    ],
+  },
+]);
 ---
 
 <Layout

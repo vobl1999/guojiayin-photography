@@ -1,8 +1,10 @@
 ---
+import { getImage } from 'astro:assets';
 import Layout from '../../components/Layout.astro';
 import Reveal from '../../components/Reveal.astro';
 import PhotoCard from '../../components/PhotoCard.astro';
 import { getAllPhotos } from '../../lib/gallery';
+import { SITE } from '../../config/site';
 import { translate, type Lang } from '../../i18n/ui';
 
 export function getStaticPaths() {
@@ -20,9 +22,24 @@ const collections = collectionKeys.map((key) => {
   return { key, label: L === 'zh' && photo?.collectionZh ? photo.collectionZh : key };
 });
 const count = photos.length;
+
+// ImageGallery 结构化数据（利于 Google 图片搜索收录）
+const ldImages = await Promise.all(
+  photos.slice(0, 20).map(async (photo) => {
+    const img = await getImage({ src: photo.src, width: 1200, format: 'jpeg', quality: 80 });
+    return new URL(img.src, SITE.url).href;
+  })
+);
+const galleryLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: t('gallery.title'),
+  url: new URL(Astro.url.pathname, SITE.url).href,
+  image: ldImages,
+});
 ---
 
-<Layout title={t('gallery.title')} description={t('gallery.intro')}>
+<Layout title={t('gallery.title')} description={t('gallery.intro')} jsonLd={galleryLd}>
   <header class="page-head container">
     <Reveal>
       <p class="label">{t('nav.portfolio')}</p>
