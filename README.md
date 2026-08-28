@@ -160,13 +160,13 @@ git push -u origin main
 
 ---
 
-## 五、从空相册开始
+## 五、日常内容维护
 
-仓库**不含任何示例照片**——相册和关于页都是空的，等你放入自己的作品：
-
-1. 照片 → `src/assets/gallery/`（相册说明文件 `src/content/gallery/*.md` 是现成的模板，照片加进来后会自动配对）
-2. 肖像照 → `src/content/pages/`（并在关于页 frontmatter 里引用，见上）
-3. 社交分享图 → `public/og-default.jpg`（可选）
+- **相册**：照片放在 `src/assets/gallery/`，说明文件在 `src/content/gallery/*.md`（与照片同名，自动配对）
+- **日志**：`src/content/posts/` 目前有索尼 2026 摄影大赛的参赛说明（`sony-2026-awards.md` 英文、`sony-2026-zh.md` 中文），需要时直接改或新增
+- **关于页**：`src/content/pages/about-en.md` / `about-zh.md`
+- 肖像照 → `src/content/pages/`（并在关于页 frontmatter 里引用）
+- 社交分享图 → `public/og-default.jpg`（可选）
 
 相册为空时页面会显示一句提示，构建完全正常。
 

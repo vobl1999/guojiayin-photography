@@ -21,6 +21,7 @@ const en = {
   'menu.open': 'Open menu',
   'menu.close': 'Close menu',
   // Home
+  'home.hello': 'Hello.',
   'hero.kicker': 'Photography · Journal',
   'hero.headline': 'Light, observed with <em>patience</em>.',
   'hero.sub':
@@ -79,6 +80,7 @@ const zh: Record<keyof typeof en, string> = {
   'nav.contact': '联系',
   'menu.open': '打开菜单',
   'menu.close': '关闭菜单',
+  'home.hello': '你好。',
   'hero.kicker': '摄影 · 日志',
   'hero.headline': '光线，值得<em>耐心</em>等待。',
   'hero.sub':
