@@ -290,7 +290,6 @@ em {
   transition:
     opacity var(--dur) var(--ease) var(--reveal-delay, 0ms),
     transform var(--dur) var(--ease) var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
 }
 
 [data-reveal].is-in {
