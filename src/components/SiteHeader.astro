@@ -21,9 +21,12 @@ const nav = [
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="wordmark" href={base} aria-label="Home">
-      {SITE.name}<span class="wordmark-dot">.</span>
-    </a>
+    <div class="brand">
+      <a class="wordmark" href={base} aria-label="Home">
+        {SITE.name}<span class="wordmark-dot">.</span>
+      </a>
+      <span class="hassel-head" aria-hidden="true"></span>
+    </div>
 
     <nav class="nav" aria-label="Primary">
       {

@@ -366,6 +366,28 @@ html.js img.photo-img.is-loaded {
   margin-left: 1px;
 }
 
+/* 品牌区：名字 + 哈苏字标（名字右边一点） */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.hassel-head {
+  width: clamp(2.6rem, 5.5vw, 3.6rem);
+  aspect-ratio: 76.14 / 5.089;
+  flex: none;
+  background-color: var(--ink);
+  -webkit-mask-image: url('/hasselblad-mark.svg');
+  mask-image: url('/hasselblad-mark.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.9;
+}
+
 .nav {
   display: flex;
   align-items: center;
