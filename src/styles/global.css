@@ -291,6 +291,7 @@ em {
   background: var(--paper-deep);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* 模糊渐显：有 JS 时图片加载完成后淡入，无 JS 时直接显示 */
