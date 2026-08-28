@@ -3,6 +3,7 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import '../styles/global.css';
+import ClientRouter from 'astro/components/ClientRouter.astro';
 import { SITE } from '../config/site';
 import { langFromUrl, alternatePath, type Lang } from '../i18n/ui';
 import SiteHeader from './SiteHeader.astro';
@@ -68,6 +69,7 @@ const personLd = JSON.stringify({
     <link rel="alternate" hreflang="x-default" href={new URL('/', SITE.url).href} />
     <meta name="theme-color" content="#f4f1ea" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Journal`} href="/rss.xml" />
+    <ClientRouter />
 
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={fullTitle} />
