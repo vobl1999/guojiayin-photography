@@ -36,6 +36,14 @@ function toTitle(name: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/**
+ * 规范化文件名，与 Astro 内容条目的 id（slug 化）对齐：
+ * 小写、空格→连字符。例如 "Jiayin Guo_0001.jpg" ↔ "jiayin-guo_0001.md"
+ */
+function normalizeName(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
+
 export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
   const sidecars = await getCollection('gallery');
   const photos: Photo[] = [];
@@ -44,7 +52,7 @@ export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
     const filename = path.split('/').pop()!;
     const base = filename.replace(/\.[^.]+$/, '');
     const meta = sidecars.find(
-      (s) => basename(s.id).replace(/\.(md|mdx)$/, '').toLowerCase() === base.toLowerCase()
+      (s) => normalizeName(basename(s.id).replace(/\.(md|mdx)$/, '')) === normalizeName(base)
     );
     const d = meta?.data;
 
@@ -72,9 +80,10 @@ export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
   return photos;
 }
 
-/** 首页精选：优先 featured 标记，否则取最新前 n 张 */
+/** 首页精选：featured 标记的排前面，不足 n 张时用其余照片补满 */
 export async function getFeaturedPhotos(lang: Lang = 'en', n = 4): Promise<Photo[]> {
   const all = await getAllPhotos(lang);
   const featured = all.filter((p) => p.featured);
-  return (featured.length ? featured : all).slice(0, n);
+  const rest = all.filter((p) => !p.featured);
+  return [...featured, ...rest].slice(0, n);
 }
