@@ -187,6 +187,14 @@ git push -u origin main
 
 ---
 
+## 工具脚本
+
+- `node scripts/add-photos.mjs` — 扫描 `src/assets/gallery/` 里没有说明文件的新照片，自动生成 `src/content/gallery/` 同名 `.md`（能读到 EXIF 就带上相机/镜头信息）
+- `node scripts/sync-github.mjs` — **一键推送**：自动检测本地改动（新增/修改/删除）→ 本地提交 → 通过 api.github.com 同步到 GitHub（github.com 被墙时也能用）
+- `node scripts/make-og.mjs` — 从精选照片重新生成社交分享图 `public/og-default.jpg`
+
+---
+
 ## 上线清单（部署后逐项检查）
 
 1. **Cloudflare Pages 连接仓库**：Workers & Pages → Create → Pages → Connect to Git → `guojiayin-photography` → Framework **Astro**、输出目录 `dist`、Node **22** → Deploy
