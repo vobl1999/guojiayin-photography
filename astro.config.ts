@@ -8,11 +8,6 @@ export default defineConfig({
   site: SITE.url,
   output: 'static',
   trailingSlash: 'never',
-  // 链接悬停预取：国内网络下点击几乎秒开
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'hover',
-  },
   integrations: [
     sitemap({
       // 首页的正式地址是 /en 与 /zh，根路径 / 只是 /en 的别名，不进 sitemap

@@ -160,19 +160,23 @@ const personLd = JSON.stringify({
       });
 
       const startImageLoading = () => {
-        const imgIo = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (!e.isIntersecting) return;
-              const img = e.target as HTMLImageElement;
-              if (img.dataset.srcRaw) img.src = img.dataset.srcRaw;
-              if (img.dataset.srcsetRaw) img.srcset = img.dataset.srcsetRaw;
-              imgIo.unobserve(img);
-            });
-          },
-          { rootMargin: '0px 0px 640px 0px' }
-        );
-        photos.forEach((img) => imgIo.observe(img));
+        // 图片按 DOM 顺序一张一张加载：上一张完成后再加载下一张
+        const queue = photos.slice();
+        const loadNext = () => {
+          const img = queue.shift();
+          if (!img) return;
+          if (img.dataset.srcRaw) img.src = img.dataset.srcRaw;
+          if (img.dataset.srcsetRaw) img.srcset = img.dataset.srcsetRaw;
+          let advanced = false;
+          const advance = () => {
+            if (advanced) return;
+            advanced = true;
+            setTimeout(loadNext, 160);
+          };
+          img.addEventListener('load', advance, { once: true });
+          img.addEventListener('error', advance, { once: true });
+        };
+        loadNext();
       };
 
       if (document.readyState === 'complete') {
