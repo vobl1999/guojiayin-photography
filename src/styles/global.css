@@ -387,6 +387,18 @@ html.js img.photo-img.is-loaded {
   min-width: 0;
 }
 
+.hassel-link {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.92;
+  transition: opacity 0.3s;
+}
+
+.hassel-link:hover,
+.hassel-link:focus-visible {
+  opacity: 1;
+}
+
 .hassel-head {
   /* 与名字同高：字标是超宽比例，同高即同视觉大小 */
   height: clamp(0.8rem, 2vw, 0.96rem);
@@ -400,7 +412,6 @@ html.js img.photo-img.is-loaded {
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  opacity: 0.92;
 }
 
 @media (max-width: 640px) {
