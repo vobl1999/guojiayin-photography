@@ -46,6 +46,7 @@
   - 站点配置 → `src/config/site.ts`（nameZh=郭嘉胤、email=gjy@vobl.cn、X/抖音/Bilibili/LinkedIn、brandLogo 可选、r2Base）
   - 界面文案 → `src/i18n/ui.ts`
 - **设计**：Fraunces + Inter + 中文系统字体；暗色模式（滑块+日月图标，localStorage `theme-pref`）；首页「你好。/Hello.」霓虹光斑（localStorage `hello-neon-pinned`）；页头哈苏字标（CSS mask，可点跳哈苏官网）；联系页灰色 Q 版社交图标（`src/components/SocialLink.astro`，暖灰芯片+奶油图形，悬停变金上浮）
+- **首页精选轮换**：statement 大图固定（order=1 的照片，当前 0001）；其余全部照片为候选池，`Home.astro` 里客户端按本地日期每天挑 4 张（等距轮换，每张每 3 天出现一次）；无 JS 时显示前 4 张（按日期排序）
 - **性能**：LQIP 模糊渐显、WebP（网格 480/800w q70、Lightbox 1400w q74、首页 1800w q78）、滚动加载（IO rootMargin 640px）、回到顶部按钮、主题化滚动条、字体预加载、`content-visibility`
 - **重要**：**ClientRouter 已移除**（用户要求每次进页面完整刷新）；预取关闭；`<Image>` 必须同时给 `width` 和 `widths`（否则 src 回退原图，曾致 2.2MB 全尺寸 bug）
 - **安全**：_headers 全套（CSP/HSTS/COOP/CORP 等）；注意 `_headers` 注释只能用 `#`

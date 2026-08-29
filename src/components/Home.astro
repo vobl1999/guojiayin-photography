@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import PhotoCard from './PhotoCard.astro';
-import { getFeaturedPhotos } from '../lib/gallery';
+import { getAllPhotos } from '../lib/gallery';
 import { translate, type Lang } from '../i18n/ui';
 
 interface Props {
@@ -13,9 +13,11 @@ const L: Lang = lang;
 const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
 const p = (path: string) => (L === 'zh' ? '/zh' : '/en') + path;
 
-const photos = await getFeaturedPhotos(L, 5);
-const statement = photos[0];
-const works = photos.slice(1, 5);
+// 首页精选：第一张（statement 大图，order=1）固定，其余每天轮换
+const photos = await getAllPhotos(L);
+const statement = photos.find((ph) => ph.order === 1) ?? photos[0];
+const candidates = photos.filter((ph) => ph !== statement);
+const works = candidates;
 ---
 
 <!-- 大字问候（霓虹光斑交互） -->
@@ -53,16 +55,20 @@ const works = photos.slice(1, 5);
   )
 }
 
-<!-- 精选作品 -->
+<!-- 精选作品（每天轮换：默认前 4 张可见，其余由脚本按当天日期挑选并重排） -->
 {
   works.length > 0 && (
     <section class="section container">
-      <div class="works-grid">
+      <div class="works-grid" data-rotate>
         {
           works.map((photo, i) => (
             <div
-              class:list={['works-item', i % 2 === 0 ? 'works-item--wide' : 'works-item--tall']}
-              style={`--reveal-delay:${i * 90}ms`}
+              class:list={[
+                'works-item',
+                i % 2 === 0 ? 'works-item--wide' : 'works-item--tall',
+                i >= 4 && 'is-pool',
+              ]}
+              style={`--reveal-delay:${(i % 4) * 90}ms`}
             >
               <PhotoCard photo={photo} index={i} link={p('/gallery')} />
             </div>
@@ -161,6 +167,11 @@ const works = photos.slice(1, 5);
     align-items: start;
   }
 
+  /* 轮换池里的卡片默认隐藏，由脚本按当天日期挑 4 张显示 */
+  .works-item.is-pool {
+    display: none;
+  }
+
   .works-item--wide {
     grid-column: span 7;
   }
@@ -185,6 +196,38 @@ const works = photos.slice(1, 5);
 </style>
 
 <script>
+  // ── 精选作品每日轮换 ─────────────────────────────────────
+  // 第一张（statement 大图）固定；其余照片组成候选池，
+  // 按当天日期（本地时区）等距挑 4 张，均匀轮换：每张每 3 天出现一次。
+  // 无 JS / 少于 5 张照片时保持默认（前 4 张）不变。
+  (() => {
+    const grid = document.querySelector('[data-rotate]');
+    if (!grid) return;
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('.works-item'));
+    const n = items.length;
+    if (n <= 4) return;
+
+    const k = 4;
+    const d = new Date();
+    // 本地日期的天数序号（跨天即换一批）
+    const day = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000;
+    const start = day % n;
+
+    const chosen: number[] = [];
+    for (let i = 0; i < k; i++) {
+      const idx = (start + Math.round((i * n) / k)) % n;
+      if (!chosen.includes(idx)) chosen.push(idx);
+    }
+
+    chosen.forEach((nodeIdx, pos) => {
+      const el = items[nodeIdx];
+      el.classList.remove('is-pool');
+      el.className = `works-item works-item--${pos % 2 === 0 ? 'wide' : 'tall'}`;
+      el.style.setProperty('--reveal-delay', `${pos * 90}ms`);
+      grid.appendChild(el);
+    });
+  })();
+
   // ── 霓虹光斑交互 ─────────────────────────────────────────
   // 老设备 / 不支持的环境（无 PointerEvent、无 background-clip:text、
   // 或用户偏好减少动效）：一律不加特效，保持普通文字
