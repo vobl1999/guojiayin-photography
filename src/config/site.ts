@@ -28,10 +28,9 @@ export const SITE = {
   },
 
   /* ── 原图下载（R2 存储桶） ────────────────────────────── */
-  // 把原始照片上传到 Cloudflare R2 公共桶（脚本：node scripts/upload-r2.mjs），
-  // 这里填桶的公共访问地址（如 https://pub-xxxx.r2.dev），点下载即可获取原图；
-  // 留空则回退为下载网站的优化图。
-  r2Base: '',
+  // 原始照片已上传到 R2 公共桶 photos-originals（更新：node scripts/upload-r2.mjs）
+  // 点 Lightbox 下载按钮即可获取原图
+  r2Base: 'https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev',
 
   /* ── 页脚 ─────────────────────────────────────────────── */
   footerNote: 'All photographs are the property of the author.',
