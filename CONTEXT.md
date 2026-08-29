@@ -1,15 +1,26 @@
 # 交接卡 CONTEXT.md
 
-> 给未来任何会话的"我"：读完本文件即可无缝接管此项目。最后更新：2026-08-29 晚（含 R2 下载、EdgeOne、模板仓库等全部最新状态）
+> 给未来任何会话的"我"：读完本文件即可无缝接管此项目。最后更新：2026-08-30 凌晨（新增独立博客站 blog.vobl.cn）
 
 ## 项目概况
 
 - **站点**：Guo Jiayin（郭嘉胤）个人摄影博客，业余摄影师，哈苏 X2D II 100C + XCD 90V
-- **域名**：`https://www.vobl.cn`（正式）｜回源/备用：`https://guojiayin-photography.pages.dev`（Cloudflare Pages）
+- **域名**：`https://www.vobl.cn`（作品集）｜`https://blog.vobl.cn`（独立博客站，2026-08 新建）｜回源/备用：`https://guojiayin-photography.pages.dev`（Cloudflare Pages）
 - **GitHub 主站仓库**：`vobl1999/guojiayin-photography`（公开）
+- **GitHub 博客仓库**：`vobl1999/guojiayin-blog`（公开，本地 `E:\blogb`，推送走 `node scripts/push.mjs`）
 - **GitHub 模板仓库**：`vobl1999/Photografy-Blog`（开源模板，另见下方）
-- **本地工作区**：`E:\BLOG`（主站）｜`E:\muban`（模板副本，含独立 git）
+- **本地工作区**：`E:\BLOG`（主站）｜`E:\blogb`（博客）｜`E:\muban`（模板副本，含独立 git）
 - **目标用户**：主要在国内
+
+## 博客站（blog.vobl.cn，独立项目 E:\blogb）
+
+- **栈**：Astro 5 SSR + @astrojs/cloudflare → Cloudflare Pages（项目名 `blogb`，域名 blogb-dll.pages.dev）+ D1（`blogb-db`，id af72fe6a-abfd-4351-9c55-d890be6aaa00）+ R2（`blogb-assets`，头像/封面/文章图，同域 `/media/` 通道）
+- **功能**：邮箱验证码注册/登录（Lark SMTP `smtp.larksuite.com:465`、发件 `no-reply@vobl.cn`，密钥在 Pages secrets）+ 密码登录；Markdown 发博（草稿/发布/标签/封面/预览）；评论（楼中楼）；用户主页 `/u/用户名`（头像/昵称/性别/简介）；管理后台 `/admin`；RSS
+- **管理员**：D1 已种账号 `gjy@vobl.cn` / username `jiayin`（role=admin，随机密码 → 用邮箱验证码登录后到 /me 改密）
+- **设计**：复用主站 Fraunces/Inter/暖纸色调；**无哈苏标识**；全站毛玻璃（`backdrop-filter`，`@supports` + `data-legacy` 老设备降级实底）
+- **主站联动**：主站页头/页脚「日志」已改为跳 `https://blog.vobl.cn`；`public/_redirects` 把 `/en|zh/journal/*` 301 到 `blog.vobl.cn/post/:splat`（sony 两篇文章已迁移，slug 一致：sony-2026-awards / sony-2026-zh）
+- **部署命令**（E:\blogb）：`npm run build` → `npx wrangler pages deploy dist --project-name blogb --branch main --commit-dirty=true`（环境变量 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID）
+- **⚠️ 经验**：`wrangler pages secret put` 后必须**重新部署**才生效；`wrangler r2 object put` 必须带 `--remote`（否则进本地模拟）；push.mjs 不读 .gitignore，靠自身 IGNORE 名单（.dev.vars/seed 已列）
 
 ## 分发架构（最新状态：已回到纯 Cloudflare）
 

@@ -1,3 +1,8 @@
 # Cloudflare Pages redirects
 # 根路径 / 已直接显示英文首页（src/pages/index.astro），无需跳转。
-# 以后需要规则时按格式添加：/old-path  /new-path  301
+
+# 日志已独立到博客站 blog.vobl.cn（文章 slug 一一对应，直接转发）
+/en/journal    https://blog.vobl.cn/             301
+/zh/journal    https://blog.vobl.cn/             301
+/en/journal/*  https://blog.vobl.cn/post/:splat  301
+/zh/journal/*  https://blog.vobl.cn/post/:splat  301

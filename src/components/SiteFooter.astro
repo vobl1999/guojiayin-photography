@@ -10,7 +10,7 @@ const base = lang === 'zh' ? '/zh' : '/en';
 const socials = Object.values(SITE.socials).filter((s) => s.url);
 const nav = [
   { label: t('nav.portfolio'), href: `${base}/gallery` },
-  { label: t('nav.journal'), href: `${base}/journal` },
+  { label: t('nav.journal'), href: 'https://blog.vobl.cn', external: true },
   { label: t('nav.about'), href: `${base}/about` },
   { label: t('nav.contact'), href: `${base}/contact` },
 ];
@@ -25,7 +25,9 @@ const nav = [
     <div>
       <p class="footer-head">{t('footer.index')}</p>
       <div class="footer-links">
-        {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        {nav.map((n) => (
+          <a href={n.href} {...(n.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{n.label}</a>
+        ))}
       </div>
     </div>
     <div>

@@ -9,13 +9,14 @@ const base = lang === 'zh' ? '/zh' : '/en';
 
 const nav = [
   { key: 'nav.portfolio' as const, href: '/gallery' },
-  { key: 'nav.journal' as const, href: '/journal' },
+  { key: 'nav.journal' as const, href: '/journal', external: 'https://blog.vobl.cn' },
   { key: 'nav.about' as const, href: '/about' },
   { key: 'nav.contact' as const, href: '/contact' },
 ].map((item) => ({
   label: translate(lang, item.key),
-  href: `${base}${item.href}`,
-  active: path === `${base}${item.href}`,
+  href: item.external ?? `${base}${item.href}`,
+  external: !!item.external,
+  active: !item.external && path === `${base}${item.href}`,
 }));
 ---
 
@@ -39,7 +40,11 @@ const nav = [
     <nav class="nav" aria-label="Primary">
       {
         nav.map((item, i) => (
-          <a class:list={['nav-link', { 'is-active': item.active }]} href={item.href}>
+          <a
+            class:list={['nav-link', { 'is-active': item.active }]}
+            href={item.href}
+            {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
             <span class="nav-num">{String(i + 1).padStart(2, '0')}</span>
             {item.label}
           </a>
@@ -65,7 +70,12 @@ const nav = [
     <nav class="mobile-nav" aria-label="Mobile">
       {
         nav.map((item, i) => (
-          <a class="mobile-link" href={item.href} data-menu-close>
+          <a
+            class="mobile-link"
+            href={item.href}
+            data-menu-close
+            {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
             <span class="mobile-num">{String(i + 1).padStart(2, '0')}</span>
             {item.label}
           </a>
