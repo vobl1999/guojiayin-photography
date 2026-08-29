@@ -872,6 +872,7 @@ body.menu-open {
   line-height: 1.25;
   margin-top: 2.6em;
   letter-spacing: -0.01em;
+  scroll-margin-top: calc(var(--header-h) + 1rem);
 }
 
 .prose h3 {
@@ -879,6 +880,7 @@ body.menu-open {
   font-weight: 400;
   font-size: 1.25rem;
   margin-top: 2.2em;
+  scroll-margin-top: calc(var(--header-h) + 1rem);
 }
 
 .prose a {
@@ -1031,6 +1033,15 @@ body.menu-open {
 
 .back-top:hover {
   border-color: var(--ink);
+}
+
+.back-top:active,
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+
+.back-top.is-visible:active {
+  transform: scale(0.94);
 }
 
 @media print {
