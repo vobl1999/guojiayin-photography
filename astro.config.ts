@@ -22,5 +22,7 @@ export default defineConfig({
   },
   markdown: {
     shikiConfig: { theme: 'github-light' },
+    // 给文章标题自动加 id（配合目录跳转）
+    rehypePlugins: ['rehype-slug'],
   },
 });

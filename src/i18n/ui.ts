@@ -52,6 +52,7 @@ const en = {
   'journal.previous': 'Previous entry',
   'journal.next': 'Next entry',
   'journal.readTime': '{n} min read',
+  'journal.contents': 'Contents',
   // About
   'about.title': 'About',
   // Contact
@@ -112,6 +113,7 @@ const zh: Record<keyof typeof en, string> = {
   'journal.previous': '上一篇',
   'journal.next': '下一篇',
   'journal.readTime': '{n} 分钟',
+  'journal.contents': '目录',
   'about.title': '关于',
   'contact.title': '联系',
   'contact.intro': '如果你有拍摄想法、合作邀约，或者只是想打个招呼——我很乐意收到你的来信。',

@@ -69,6 +69,18 @@ const articleLd = JSON.stringify([
     ],
   },
 ]);
+
+// 文章目录：从 Markdown 的 ## / ### 标题提取（与 rehype-slug 生成的 id 一致）
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\u4e00-\u9fff\s-]/g, '')
+    .replace(/\s+/g, '-');
+const toc = Array.from(post.body?.matchAll(/^##{2,3}\s+(.+)$/gm) ?? []).map((m) => {
+  const text = m[1].trim();
+  return { level: m[0].startsWith('###') ? 3 : 2, text, id: slugify(text) };
+});
 ---
 
 <Layout
@@ -111,6 +123,21 @@ const articleLd = JSON.stringify([
             decoding="async"
           />
         </figure>
+      )
+    }
+
+    {
+      toc.length > 1 && (
+        <details class="toc container-narrow" data-reveal>
+          <summary class="label toc-summary">{t('journal.contents')}</summary>
+          <ol class="toc-list">
+            {toc.map((item) => (
+              <li class:list={['toc-item', `toc-level-${item.level}`]}>
+                <a href={`#${item.id}`}>{item.text}</a>
+              </li>
+            ))}
+          </ol>
+        </details>
       )
     }
 
@@ -223,6 +250,50 @@ const articleLd = JSON.stringify([
 
   .article-body {
     padding-block: clamp(2.8rem, 6vw, 4.5rem) clamp(3.5rem, 8vw, 6rem);
+  }
+
+  /* 文章目录 */
+  .toc {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.1rem 1.4rem;
+    margin-top: clamp(1.6rem, 3vw, 2.4rem);
+    background: var(--paper-deep);
+  }
+
+  .toc-summary {
+    cursor: pointer;
+    color: var(--ink-2);
+  }
+
+  .toc[open] .toc-summary {
+    margin-bottom: 0.9rem;
+  }
+
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    counter-reset: toc;
+  }
+
+  .toc-item {
+    list-style: none;
+  }
+
+  .toc-item a {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    color: var(--ink-2);
+    transition: color 0.25s;
+  }
+
+  .toc-item a:hover {
+    color: var(--gold);
+  }
+
+  .toc-level-3 {
+    padding-left: 1.2rem;
   }
 
   .article-nav {
