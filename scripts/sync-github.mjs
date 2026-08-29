@@ -20,8 +20,10 @@ const DELETED = [];
 for (const part of parts) {
   const flag = part.slice(0, 2);
   const path = part.slice(3);
-  if (flag.includes('?') || flag.startsWith('A')) ADDED.push(path);
-  else if (flag.startsWith('D')) DELETED.push(path);
+  // 注意：porcelain 里未暂存的删除/新增是 " D"/" A"（空格开头），
+  // 必须用 includes 而不是 startsWith，否则删除永远同步不到远端
+  if (flag.includes('?') || flag.includes('A')) ADDED.push(path);
+  else if (flag.includes('D')) DELETED.push(path);
   else if (flag.includes('M') || flag.includes('R')) MODIFIED.push(path);
 }
 console.log(`改动：新增 ${ADDED.length}，修改 ${MODIFIED.length}，删除 ${DELETED.length}`);
