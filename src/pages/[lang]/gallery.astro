@@ -83,7 +83,7 @@ const galleryLd = JSON.stringify({
   }
 </Layout>
 
-<script>
+<script define:vars={{ r2Base: SITE.r2Base }}>
   // ── 分类筛选 ──────────────────────────────────────────────
   const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
   const gridItems = Array.from(document.querySelectorAll<HTMLElement>('.grid-item'));
@@ -112,6 +112,7 @@ const galleryLd = JSON.stringify({
   const closeLabel = document.documentElement.lang === 'zh' ? '关闭' : 'Close';
   const prevLabel = document.documentElement.lang === 'zh' ? '上一张' : 'Previous';
   const nextLabel = document.documentElement.lang === 'zh' ? '下一张' : 'Next';
+  const downloadLabel = document.documentElement.lang === 'zh' ? '下载原图' : 'Download original';
 
   const lb = document.createElement('div');
   lb.className = 'lightbox';
@@ -121,6 +122,9 @@ const galleryLd = JSON.stringify({
   lb.innerHTML = `
     <button class="lb-btn lb-close" aria-label="${closeLabel}">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button class="lb-btn lb-download" aria-label="${downloadLabel}" title="${downloadLabel}">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 4v12m0 0l-4.5-4.5M12 16l4.5-4.5M5 20h14"/></svg>
     </button>
     <button class="lb-btn lb-prev" aria-label="${prevLabel}">
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M15 5l-7 7 7 7"/></svg>
@@ -143,6 +147,8 @@ const galleryLd = JSON.stringify({
   let current = 0;
   let lbOpen = false;
   let lastTrigger: HTMLElement | null = null;
+  let currentOriginal = '';
+  let currentBig = '';
 
   // 胶片条：按可见列表生成缩略图
   function buildStrip() {
@@ -210,6 +216,8 @@ const galleryLd = JSON.stringify({
     lbImg.src = card.dataset.src ?? '';
     lbImg.alt = card.dataset.caption ?? '';
     lbCount.textContent = `${current + 1} / ${list.length}`;
+    currentOriginal = card.dataset.original ?? '';
+    currentBig = card.dataset.src ?? '';
     lbCamera.textContent = card.dataset.camera ?? '';
     lbCamera.style.display = card.dataset.camera ? '' : 'none';
     setZoom(1);
@@ -274,6 +282,84 @@ const galleryLd = JSON.stringify({
 
   lb.addEventListener('click', (e) => {
     if (e.target === lb) closeLightbox();
+  });
+
+  // ── 原图下载 + 禁止商用弹窗 ──────────────────────────────
+  const licenceTitle = document.documentElement.lang === 'zh' ? '使用须知' : 'Usage Notice';
+  const licenceText =
+    document.documentElement.lang === 'zh'
+      ? '照片仅供个人欣赏与学习使用，禁止任何形式的商用、转载与二次分发。'
+      : 'These photographs are for personal viewing and study only. Commercial use, reproduction and redistribution are prohibited.';
+  const neverLabel = document.documentElement.lang === 'zh' ? '下次不再提醒' : "Don't ask again";
+  const okLabel = document.documentElement.lang === 'zh' ? '好' : 'OK';
+  const cancelLabel = document.documentElement.lang === 'zh' ? '取消' : 'Cancel';
+
+  const modal = document.createElement('div');
+  modal.className = 'licence-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.innerHTML = `
+    <div class="licence-card">
+      <h3 class="licence-title">${licenceTitle}</h3>
+      <p class="licence-text">${licenceText}</p>
+      <label class="licence-never"><input type="checkbox" class="licence-check" /> ${neverLabel}</label>
+      <div class="licence-actions">
+        <button class="licence-cancel">${cancelLabel}</button>
+        <button class="licence-ok">${okLabel}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  let licenceCb: (() => void) | null = null;
+  const openLicence = (cb: () => void) => {
+    licenceCb = cb;
+    modal.classList.add('is-open');
+  };
+  const closeLicence = () => {
+    modal.classList.remove('is-open');
+    licenceCb = null;
+  };
+  modal.querySelector('.licence-ok')!.addEventListener('click', () => {
+    const check = modal.querySelector<HTMLInputElement>('.licence-check')!;
+    if (check.checked) {
+      try {
+        localStorage.setItem('licence-accepted', '1');
+      } catch {}
+    }
+    const cb = licenceCb;
+    closeLicence();
+    cb?.();
+  });
+  modal.querySelector('.licence-cancel')!.addEventListener('click', closeLicence);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeLicence();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeLicence();
+  });
+
+  function triggerDownload(url: string, name: string) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name || '';
+    if (/^https?:/i.test(url)) {
+      // 跨域（R2 桶）：download 属性无效，新标签页打开
+      a.target = '_blank';
+      a.rel = 'noopener';
+    }
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  lb.querySelector('.lb-download')!.addEventListener('click', () => {
+    const url = r2Base ? `${String(r2Base).replace(/\/+$/, '')}/${currentOriginal}` : currentBig;
+    let accepted = false;
+    try {
+      accepted = localStorage.getItem('licence-accepted') === '1';
+    } catch {}
+    if (accepted) return triggerDownload(url, currentOriginal);
+    openLicence(() => triggerDownload(url, currentOriginal));
   });
 </script>
 
@@ -496,6 +582,105 @@ const galleryLd = JSON.stringify({
   :global(.lb-close) {
     top: 1.2rem;
     right: 1.2rem;
+  }
+
+  :global(.lb-download) {
+    top: 1.2rem;
+    right: 4.6rem;
+  }
+
+  /* 禁止商用弹窗 */
+  :global(.licence-modal) {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 10, 7, 0.62);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s var(--ease), visibility 0.3s;
+  }
+
+  :global(.licence-modal.is-open) {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  :global(.licence-card) {
+    width: min(92vw, 26rem);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+  }
+
+  :global(.licence-title) {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 0.7rem;
+  }
+
+  :global(.licence-text) {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--ink-2);
+  }
+
+  :global(.licence-never) {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.3rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  :global(.licence-actions) {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+  }
+
+  :global(.licence-cancel) {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    transition: all 0.3s var(--ease);
+  }
+
+  :global(.licence-cancel:hover) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  :global(.licence-ok) {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 999px;
+    padding: 0.55rem 1.6rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background 0.3s;
+  }
+
+  :global(.licence-ok:hover) {
+    background: var(--gold);
+    color: #fff;
   }
 
   :global(.lb-prev) {
