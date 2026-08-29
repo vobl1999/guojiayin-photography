@@ -24,13 +24,13 @@
 
 ## 下载功能 + R2（最新完成）
 
-- **R2 桶**：`photos-originals`（账号 04a64fea2e28928b0805f650a6783311），公共访问 `https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev`；13 张旧原图已上传；**8 张新原图（blog_0014~0021）待上传**（缺环境变量，等用户配置后跑 upload-r2.mjs）
+- **R2 桶**：`photos-originals`（账号 04a64fea2e28928b0805f650a6783311），公共访问 `https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev`；**20 张原图全部已上传**（2026-08-29 晚补传 blog_0014~0021，并删除了桶里的孤儿 blog_0005）
 - **site.ts**：`r2Base: 'https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev'`
 - **下载入口**：照片卡片右下角 ↓（悬停出现/触摸常显）+ Lightbox 右上角 ↓
 - **流程**：点击 → 「禁止商用」弹窗（勾"下次不再提醒"存 localStorage `licence-accepted`）→ 点「好」才下载
 - **下载通道**：`functions/downloads/[file].js` —— 同域转发 R2 + `Content-Disposition: attachment`（跨域直链会被浏览器当页面打开，所以必须走这层）。**注意：文件名要先 `decodeURIComponent` 再校验/编码**（空格文件名的 %20 曾导致 404，已修）
 - 脚本：`scripts/upload-r2.mjs`（wrangler 上传新原图，需 CLOUDFLARE_API_TOKEN 等环境变量）、`scripts/setup-r2.mjs`（一次性建桶，已用过）
-- ⚠️ 用户的 Cloudflare API Token 曾直接贴在对话里（`cfut_...`），我已提醒吊销；**新 token 不要再贴对话**，让用户存环境变量
+- ⚠️ 用户的 Cloudflare API Token 已两次直接贴在对话里（`cfut_...`，第二次在 2026-08-29 晚用于补传 R2）。**已再次提醒用户去控制台吊销/轮换**；今后只用环境变量（脚本现在支持 CLOUDFLARE_API_TOKEN 模式）
 
 ## 技术栈与架构
 
