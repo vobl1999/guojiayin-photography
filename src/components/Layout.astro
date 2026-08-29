@@ -69,6 +69,9 @@ const personLd = JSON.stringify({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 字体预加载：HTML 解析阶段就开始下载，首屏文字更早以设计字体呈现 -->
+    <link rel="preload" href={frauncesLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
@@ -122,6 +125,7 @@ const personLd = JSON.stringify({
       <slot />
     </main>
     <SiteFooter />
+    <button class="back-top" data-back-top aria-label="Back to top">↑</button>
     <script>
       // 滚动渐显（所有 [data-reveal] 元素）
       const io = new IntersectionObserver(
@@ -222,6 +226,18 @@ const personLd = JSON.stringify({
           syncToggleAria();
         });
       });
+
+      // 回到顶部按钮
+      const backTop = document.querySelector<HTMLButtonElement>('[data-back-top]');
+      if (backTop) {
+        const onScrollTop = () =>
+          backTop.classList.toggle('is-visible', window.scrollY > 600);
+        onScrollTop();
+        window.addEventListener('scroll', onScrollTop, { passive: true });
+        backTop.addEventListener('click', () =>
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        );
+      }
     </script>
   </body>
 </html>

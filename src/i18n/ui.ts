@@ -61,6 +61,8 @@ const en = {
   'contact.emailLabel': 'Email',
   'contact.elsewhere': 'Elsewhere',
   'contact.response': 'I usually reply within a day or two.',
+  'contact.copy': 'Copy',
+  'contact.copied': 'Copied',
   // 404
   '404.title': 'Nothing here.',
   '404.text': 'The page you are looking for has wandered off.',
@@ -116,6 +118,8 @@ const zh: Record<keyof typeof en, string> = {
   'contact.emailLabel': '邮箱',
   'contact.elsewhere': '其他地方',
   'contact.response': '我通常在一两天内回复。',
+  'contact.copy': '复制',
+  'contact.copied': '已复制',
   '404.title': '这里什么都没有。',
   '404.text': '你寻找的页面已经走丢了。',
   '404.cta': '回到首页',

@@ -24,10 +24,21 @@ const socials = Object.values(SITE.socials).filter((s) => s.url);
     </Reveal>
 
     <Reveal delay={140}>
-      <a class="contact-mail" href={`mailto:${SITE.email}`}>
-        {SITE.email}
-        <span class="contact-arrow">→</span>
-      </a>
+      <div class="contact-mail-row">
+        <a class="contact-mail" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+          <span class="contact-arrow">→</span>
+        </a>
+        <button
+          class="copy-btn"
+          data-copy-email
+          data-email={SITE.email}
+          data-copied={t('contact.copied')}
+          aria-label={t('contact.copy')}
+        >
+          {t('contact.copy')}
+        </button>
+      </div>
       <p class="label contact-response">{t('contact.response')}</p>
     </Reveal>
 
@@ -49,6 +60,32 @@ const socials = Object.values(SITE.socials).filter((s) => s.url);
     }
   </section>
 </Layout>
+
+<script>
+  // 一键复制邮箱
+  const copyBtn = document.querySelector<HTMLButtonElement>('[data-copy-email]');
+  copyBtn?.addEventListener('click', async () => {
+    const email = copyBtn.dataset.email ?? '';
+    try {
+      await navigator.clipboard.writeText(email);
+    } catch {
+      // 老浏览器回退
+      const ta = document.createElement('textarea');
+      ta.value = email;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+      } catch {}
+      ta.remove();
+    }
+    const original = copyBtn.textContent ?? '';
+    copyBtn.textContent = copyBtn.dataset.copied ?? original;
+    setTimeout(() => {
+      copyBtn.textContent = original;
+    }, 1600);
+  });
+</script>
 
 <style>
   .contact {
@@ -82,6 +119,29 @@ const socials = Object.values(SITE.socials).filter((s) => s.url);
     padding-bottom: 0.6rem;
     transition: color 0.3s, border-color 0.3s;
     width: fit-content;
+  }
+
+  .contact-mail-row {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .copy-btn {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    transition: all 0.3s var(--ease);
+  }
+
+  .copy-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
   }
 
   .contact-mail:hover {
