@@ -14,7 +14,7 @@ interface Props {
 const { photo, index, lightbox = false, link = '' } = Astro.props;
 
 const big = lightbox
-  ? await getImage({ src: photo.src, width: 1600, quality: 78, format: 'webp' })
+  ? await getImage({ src: photo.src, width: 1400, quality: 74, format: 'webp' })
   : null;
 const thumb = lightbox
   ? await getImage({ src: photo.src, width: 240, quality: 72, format: 'webp' })
