@@ -66,7 +66,7 @@ const galleryLd = JSON.stringify({
           : 'The portfolio is empty — drop photographs into src/assets/gallery/ and they will appear here.'}
       </p>
     ) : (
-      <section class="gallery-grid" id="gallery" aria-label={t('gallery.title')}>
+      <section class="gallery-grid" id="gallery" data-r2={SITE.r2Base} aria-label={t('gallery.title')}>
         {
           photos.map((photo, i) => (
             <div
@@ -83,7 +83,10 @@ const galleryLd = JSON.stringify({
   }
 </Layout>
 
-<script define:vars={{ r2Base: SITE.r2Base }}>
+<script>
+  // R2 原图下载地址前缀（从页面 data 属性读取，避免 define:vars 导致脚本不编译）
+  const r2Base = document.getElementById('gallery')?.dataset.r2 || '';
+
   // ── 分类筛选 ──────────────────────────────────────────────
   const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
   const gridItems = Array.from(document.querySelectorAll<HTMLElement>('.grid-item'));
