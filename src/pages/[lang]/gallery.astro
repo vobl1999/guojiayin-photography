@@ -355,14 +355,31 @@ const galleryLd = JSON.stringify({
     a.remove();
   }
 
-  lb.querySelector('.lb-download')!.addEventListener('click', () => {
-    const url = r2Base ? `${String(r2Base).replace(/\/+$/, '')}/${currentOriginal}` : currentBig;
+  function requestDownload(name: string, fallbackSrc: string) {
+    const url = r2Base ? `${String(r2Base).replace(/\/+$/, '')}/${name}` : fallbackSrc;
     let accepted = false;
     try {
       accepted = localStorage.getItem('licence-accepted') === '1';
     } catch {}
-    if (accepted) return triggerDownload(url, currentOriginal);
-    openLicence(() => triggerDownload(url, currentOriginal));
+    if (accepted) return triggerDownload(url, name);
+    openLicence(() => triggerDownload(url, name));
+  }
+
+  // Lightbox 内的下载按钮
+  lb.querySelector('.lb-download')!.addEventListener('click', () =>
+    requestDownload(currentOriginal, currentBig)
+  );
+
+  // 照片卡片上的下载按钮（阻止冒泡，避免同时打开 Lightbox）
+  document.querySelectorAll('[data-download]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const anchor = (btn as HTMLElement).closest<HTMLElement>('[data-photo]');
+      const name = btn.getAttribute('data-original') ?? '';
+      const fallback = anchor?.dataset.src ?? '';
+      requestDownload(name, fallback);
+    });
   });
 </script>
 

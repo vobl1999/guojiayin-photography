@@ -363,6 +363,46 @@ html.js img.photo-img.is-loaded {
   font-variant-numeric: tabular-nums;
 }
 
+/* 照片卡片上的下载按钮（悬停出现，触摸常显） */
+.photo-download {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  transform: translateY(4px);
+}
+
+.photo-card:hover .photo-download,
+.photo-card:focus-within .photo-download {
+  opacity: 1;
+  transform: none;
+}
+
+.photo-download:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@media (hover: none) {
+  .photo-download {
+    opacity: 0.85;
+    transform: none;
+  }
+}
+
 /* ── Header ────────────────────────────────────────────────── */
 .site-header {
   position: sticky;

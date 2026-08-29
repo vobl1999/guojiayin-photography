@@ -78,6 +78,20 @@ const caption = photo.location
           decoding="async"
         />
         {index !== undefined && <span class="photo-index">{String(index + 1).padStart(2, '0')}</span>}
+        {
+          lightbox && (
+            <span
+              class="photo-download"
+              data-download
+              data-original={photo.filename}
+              role="button"
+              tabindex="0"
+              aria-label="Download original"
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v12m0 0l-4.5-4.5M12 16l4.5-4.5M5 20h14"/></svg>
+            </span>
+          )
+        }
       </a>
     )
   }
