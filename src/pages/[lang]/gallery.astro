@@ -344,19 +344,15 @@ const galleryLd = JSON.stringify({
   function triggerDownload(url: string, name: string) {
     const a = document.createElement('a');
     a.href = url;
-    a.download = name || '';
-    if (/^https?:/i.test(url)) {
-      // 跨域（R2 桶）：download 属性无效，新标签页打开
-      a.target = '_blank';
-      a.rel = 'noopener';
-    }
+    if (name) a.download = name;
     document.body.appendChild(a);
     a.click();
     a.remove();
   }
 
   function requestDownload(name: string, fallbackSrc: string) {
-    const url = r2Base ? `${String(r2Base).replace(/\/+$/, '')}/${name}` : fallbackSrc;
+    // 同域下载通道（Content-Disposition 强制下载），R2 未配置时回退优化图
+    const url = r2Base ? `/downloads/${encodeURIComponent(name)}` : fallbackSrc;
     let accepted = false;
     try {
       accepted = localStorage.getItem('licence-accepted') === '1';
