@@ -45,7 +45,7 @@ const nav = [
           </a>
         ))
       }
-      <a class="lang-switch" href={altPath} aria-label="Switch language" data-astro-reload>
+      <a class="lang-switch" href={altPath} aria-label="Switch language">
         {lang === 'zh' ? 'EN' : '中文'}
       </a>
       <button class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Toggle dark mode">
@@ -71,7 +71,7 @@ const nav = [
           </a>
         ))
       }
-      <a class="mobile-link" href={altPath} data-menu-close data-astro-reload>
+      <a class="mobile-link" href={altPath} data-menu-close>
         <span class="mobile-num">·</span>
         {lang === 'zh' ? 'English' : '中文'}
       </a>
