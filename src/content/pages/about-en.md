@@ -11,7 +11,7 @@ Mostly landscape, with a soft spot for street and the quiet geometry of building
 
 ## The gear
 
-- **Body:** Hasselblad X2D II 100C
+- **Body:** [Hasselblad X2D II 100C](https://www.hasselblad.com)
 - **Lens:** XCD 90V — my favourite, and almost the only one I carry
 
 No film, no nostalgia — just the camera and the light.

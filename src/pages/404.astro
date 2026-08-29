@@ -1,26 +1,93 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../components/Layout.astro';
 import Reveal from '../components/Reveal.astro';
+import { getFeaturedPhotos } from '../lib/gallery';
+
+// 404 背景：取一张精选照片做底，内容浮在上面
+const photos = await getFeaturedPhotos('en', 1);
+const bg = photos[0];
 ---
 
 <Layout title="404 — Not Found" noindex>
-  <section class="notfound container">
-    <Reveal>
-      <p class="label">404 — Not Found</p>
-      <h1 class="display-1">这里什么都没有。</h1>
-      <p class="nf-text">
-        The page you are looking for has wandered off.<br />
-        你寻找的页面已经走丢了。
-      </p>
-      <div class="nf-links">
-        <a class="link" href="/en">English Home<span class="arrow">&nbsp;→</span></a>
-        <a class="link" href="/zh">中文首页<span class="arrow">&nbsp;→</span></a>
-      </div>
-    </Reveal>
+  <section class="notfound">
+    {
+      bg && (
+        <div class="nf-bg" aria-hidden="true">
+          <Image
+            src={bg.src}
+            alt=""
+            widths={[900, 1600]}
+            sizes="100vw"
+            format="webp"
+            quality={70}
+            loading="eager"
+            decoding="async"
+          />
+          <div class="nf-veil"></div>
+        </div>
+      )
+    }
+    <div class="notfound-inner container">
+      <Reveal>
+        <p class="label nf-label">404 — Not Found</p>
+        <h1 class="display-1 nf-title">这里什么都没有。</h1>
+        <p class="nf-text">
+          The page you are looking for has wandered off.<br />
+          你寻找的页面已经走丢了。
+        </p>
+        <div class="nf-links">
+          <a class="link" href="/en">English Home<span class="arrow">&nbsp;→</span></a>
+          <a class="link" href="/zh">中文首页<span class="arrow">&nbsp;→</span></a>
+        </div>
+      </Reveal>
+    </div>
   </section>
 </Layout>
 
 <style>
+  .notfound {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .nf-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .nf-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .nf-veil {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+  }
+
+  :global([data-theme='dark']) .nf-veil {
+    background: rgba(19, 17, 16, 0.82);
+  }
+
+  .notfound-inner {
+    position: relative;
+    padding-block: var(--section);
+  }
+
+  .nf-label {
+    margin-bottom: 1.2rem;
+  }
+
+  .nf-title {
+    max-width: 14ch;
+  }
+
   .nf-text {
     max-width: 26rem;
     font-family: var(--serif);
