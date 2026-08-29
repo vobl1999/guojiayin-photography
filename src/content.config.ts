@@ -40,6 +40,7 @@ const gallery = defineCollection({
     collection: z.string().optional(), // 用于相册筛选，如 Landscape / Portrait
     collectionZh: z.string().optional(), // 筛选标签的中文名，如 风景
     featured: z.boolean().default(false), // 出现在首页精选作品
+    order: z.number().optional(), // featured 内的策展顺序（小→大），不设则按日期
     camera: z.string().optional(),
   }),
 });

@@ -64,6 +64,7 @@ locationZh: 奥地利 · 阿尔卑斯 # 中文地点（可选）
 collection: Landscape       # 系列名（用于相册页筛选）
 collectionZh: 风景           # 系列中文名（可选）
 featured: true              # true 则出现在首页「精选作品」
+order: 1                    # featured 内的展示顺序（数字小→大，可选；不设则按日期）
 camera: Fujifilm X-T5       # 拍摄器材（可选）
 ---
 ```

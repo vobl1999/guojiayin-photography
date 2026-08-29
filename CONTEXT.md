@@ -5,23 +5,21 @@
 ## 项目概况
 
 - **站点**：Guo Jiayin（郭嘉胤）个人摄影博客，业余摄影师，哈苏 X2D II 100C + XCD 90V
-- **域名**：`https://www.vobl.cn`（正式，现已走腾讯 EdgeOne 加速）｜回源/备用：`https://guojiayin-photography.pages.dev`（Cloudflare Pages）
+- **域名**：`https://www.vobl.cn`（正式）｜回源/备用：`https://guojiayin-photography.pages.dev`（Cloudflare Pages）
 - **GitHub 主站仓库**：`vobl1999/guojiayin-photography`（公开）
-- **GitHub 模板仓库**：`vobl1999/Photografy-Blog`（开源模板，44 个文件，另见下方）
+- **GitHub 模板仓库**：`vobl1999/Photografy-Blog`（开源模板，另见下方）
 - **本地工作区**：`E:\BLOG`（主站）｜`E:\muban`（模板副本，含独立 git）
 - **目标用户**：主要在国内
 
-## 分发架构（重要！已从"仅 Cloudflare"演进）
+## 分发架构（最新状态：已回到纯 Cloudflare）
 
 ```
-访客 → 腾讯云 EdgeOne「全球(不含中国大陆)」模式（免备案，香港节点，缓存加速）
-     → 回源 Cloudflare Pages（guojiayin-photography.pages.dev）
+访客 → Cloudflare（www.vobl.cn 与根域 vobl.cn 均已代理，橙云）
+     → Cloudflare Pages（guojiayin-photography.pages.dev）
      → 图片 WebP 走 /_astro/（immutable 缓存）；原图下载走 /downloads/（Pages Functions）
 ```
 
-- DNS：vobl.cn 在 **Cloudflare 托管**；`www` 记录已改为 CNAME → EdgeOne 给的 `www.vobl.cn.cdn.dnsv1...`（**灰云 DNS only**）；根域 `vobl.cn` 当时**未动**（可能还指旧记录，需要时可统一）
-- EdgeOne 源站 = `guojiayin-photography.pages.dev`（绝不能填 www 自己，会死循环）
-- 之前踩过坑：Cloudflare 同名记录冲突；EdgeOne 会按源站 Cache-Control 缓存 HTML——所以 HTML 已改为 **max-age=300 + SWR 7 天**（更新 5 分钟全网生效）；EdgeOne 侧若出旧缓存需在控制台手动清缓存
+- **EdgeOne 已停用/回退**：DNS 实测（2026-08-29 晚）www.vobl.cn 无 CNAME、直接解析到 Cloudflare Anycast IP（104.20.x / 172.66.x）；根域 vobl.cn 同 IP。EdgeOne 的 CNAME（cdn.dnsv1...）已不在解析链上，流量直走 Cloudflare Pages。**若用户重新启用 EdgeOne 需按旧方案再配**（源站 = pages.dev，绝不含 www）
 - 备案状态：**未备案**。用户买了一台**腾讯云国内轻量（1 个月）**；腾讯云要求服务器剩余 ≥3 个月才能备案 → 已建议「阿里云 99 元/年」或续费。备案通过后可用 `deploy/nginx.conf` + `deploy/SERVER.md`（国内反代方案，已写好）
 
 ## 下载功能 + R2（最新完成）
@@ -40,7 +38,9 @@
 - **双语**：`/en/…`、`/zh/…`、根 `/` = 英文首页别名；路径手控（`src/i18n/ui.ts`）
 - **系统语言检测**：`functions/_middleware.js`（Accept-Language 开头 zh → 302 到 /zh）
 - **内容约定**：
-  - 照片 → `src/assets/gallery/`；说明 → `src/content/gallery/*.md`（同名；字段 title/titleZh/date/location/collection/featured/camera）
+  - 照片 → `src/assets/gallery/`；说明 → `src/content/gallery/*.md`（同名；字段 title/titleZh/date/location/collection/featured/order/camera）
+  - 相册现状（2026-08-29）：13 张照片，sidecar 已用 EXIF 补齐真实日期+相机（哈苏 X2D 100C · XCD 90V，blog_0004=38V、blog_0010=20-35E）；模板演示时代遗留的 9 个孤儿 sidecar（alpine-night 等）已删除
+  - `order` 字段：featured 内的策展顺序（小→大），首页 statement 图 = order 最小的 featured 照片（当前 0001）
   - 文章 → `src/content/posts/*.md`（title/description/date/tags/lang/draft/cover）
   - 关于页 → `src/content/pages/about-en.md` / `about-zh.md`
   - 站点配置 → `src/config/site.ts`（nameZh=郭嘉胤、email=gjy@vobl.cn、X/抖音/Bilibili、brandLogo 可选、r2Base）
@@ -75,13 +75,12 @@ node scripts/upload-r2.mjs               # 上传原图到 R2（需环境变量�
 
 ## 模板仓库（Photografy-Blog）
 
-- `E:\muban`：通用化模板（个人信息已清空、配置全可改、README 中文教程含作者 vobl + 求 Star）
-- 已推送 `vobl1999/Photografy-Blog`（da54b69 起）；muban 本地 git 已关联该仓库
-- 主站新增功能（下载/R2/EdgeOne）**尚未同步到模板**——用户提过可同步，待办
+- `E:\muban`：通用化模板（个人信息已清空、配置全可改、README 中文教程含作者 vobl + 求 Star），本地 git 已关联 `vobl1999/Photografy-Blog`（当前单提交 fdb75cd，工作区干净）
+- 主站新增功能（下载/R2）**尚未同步到模板**——实测 muban 只有 `functions/_middleware.js`，缺 `functions/downloads/[file].js`、`r2Base` 配置、下载按钮/授权弹窗、`scripts/upload-r2.mjs`；用户提过可同步，待办
 
 ## 待办 / 未来方向
 
 1. Google Search Console + Bing 提交 sitemap（用户自行操作）
 2. 备案（阿里 99/年 或腾讯续 3 个月）→ 通过后接国内加速（deploy/ 里已备好 nginx 方案）
-3. EdgeOne 缓存规则建议配置（HTML 短缓存、/_astro/ 长缓存）
-4. 可选：把 R2 下载功能同步到模板仓库；照片系列分类（collection 数据）；EdgeOne 根域 vobl.cn 统一
+3. 可选：把 R2 下载功能同步到模板仓库；给 13 张照片起正式标题（现在 blog_0004 等占位名）；照片系列分类（collection 数据）
+4. 若用户想重新上 EdgeOne：按旧方案把 www CNAME 指回 EdgeOne 地址、源站填 pages.dev

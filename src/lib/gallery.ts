@@ -28,6 +28,8 @@ export interface Photo {
   collection?: string;
   collectionZh?: string;
   featured: boolean;
+  /** featured 策展顺序（小→大在前），不设则按日期 */
+  order?: number;
   camera?: string;
   /** 模糊占位图（data URI），图片加载前显示 */
   lqip: string;
@@ -84,6 +86,7 @@ export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
       collection: d?.collection,
       collectionZh: d?.collectionZh,
       featured: d?.featured ?? false,
+      order: d?.order,
       camera: d?.camera,
       lqip: await makeLqip(join(process.cwd(), path.replace(/^\//, ''))),
     });
@@ -98,10 +101,16 @@ export async function getAllPhotos(lang: Lang = 'en'): Promise<Photo[]> {
   return photos;
 }
 
-/** 首页精选：featured 标记的排前面，不足 n 张时用其余照片补满 */
+/** 首页精选：featured 标记的排前面（order 小→大，未设则按日期），不足 n 张时用其余照片补满 */
 export async function getFeaturedPhotos(lang: Lang = 'en', n = 4): Promise<Photo[]> {
   const all = await getAllPhotos(lang);
-  const featured = all.filter((p) => p.featured);
+  const featured = all
+    .filter((p) => p.featured)
+    .sort(
+      (a, b) =>
+        (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||
+        (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0)
+    );
   const rest = all.filter((p) => !p.featured);
   return [...featured, ...rest].slice(0, n);
 }
