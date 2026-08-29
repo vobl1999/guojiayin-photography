@@ -14,7 +14,7 @@ interface Props {
 const { photo, index, lightbox = false, link = '' } = Astro.props;
 
 const big = lightbox
-  ? await getImage({ src: photo.src, width: 2000, quality: 85, format: 'webp' })
+  ? await getImage({ src: photo.src, width: 1600, quality: 78, format: 'webp' })
   : null;
 const thumb = lightbox
   ? await getImage({ src: photo.src, width: 240, quality: 72, format: 'webp' })
@@ -41,7 +41,7 @@ const caption = photo.location
           widths={[480, 800, 1200]}
           sizes="(min-width: 1200px) 33vw, (min-width: 760px) 50vw, 92vw"
           format="webp"
-          quality={78}
+          quality={72}
           loading="lazy"
           decoding="async"
         />
@@ -70,7 +70,7 @@ const caption = photo.location
           widths={[480, 800, 1200]}
           sizes="(min-width: 1200px) 33vw, (min-width: 760px) 50vw, 92vw"
           format="webp"
-          quality={78}
+          quality={72}
           loading="lazy"
           decoding="async"
         />
