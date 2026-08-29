@@ -24,7 +24,7 @@
 
 ## 下载功能 + R2（最新完成）
 
-- **R2 桶**：`photos-originals`（账号 04a64fea2e28928b0805f650a6783311），公共访问 `https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev`，13 张原图已上传
+- **R2 桶**：`photos-originals`（账号 04a64fea2e28928b0805f650a6783311），公共访问 `https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev`；13 张旧原图已上传；**8 张新原图（blog_0014~0021）待上传**（缺环境变量，等用户配置后跑 upload-r2.mjs）
 - **site.ts**：`r2Base: 'https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev'`
 - **下载入口**：照片卡片右下角 ↓（悬停出现/触摸常显）+ Lightbox 右上角 ↓
 - **流程**：点击 → 「禁止商用」弹窗（勾"下次不再提醒"存 localStorage `licence-accepted`）→ 点「好」才下载
@@ -39,7 +39,7 @@
 - **系统语言检测**：`functions/_middleware.js`（Accept-Language 开头 zh → 302 到 /zh）
 - **内容约定**：
   - 照片 → `src/assets/gallery/`；说明 → `src/content/gallery/*.md`（同名；字段 title/titleZh/date/location/collection/featured/order/camera）
-  - 相册现状（2026-08-29）：13 张照片，sidecar 已用 EXIF 补齐真实日期+相机（哈苏 X2D 100C · XCD 90V，blog_0004=38V、blog_0010=20-35E）；模板演示时代遗留的 9 个孤儿 sidecar（alpine-night 等）已删除
+  - 相册现状（2026-08-29 晚）：20 张照片（13 张旧 + 8 张新 blog_0014~0021，blog_0005 被用户移除）；sidecar 已用 EXIF 补齐真实日期+相机（哈苏 X2D 100C · XCD 90V，blog_0004=38V、blog_0010=20-35E）；模板演示时代遗留的 9 个孤儿 sidecar（alpine-night 等）已删除
   - `order` 字段：featured 内的策展顺序（小→大），首页 statement 图 = order 最小的 featured 照片（当前 0001）
   - 文章 → `src/content/posts/*.md`（title/description/date/tags/lang/draft/cover）
   - 关于页 → `src/content/pages/about-en.md` / `about-zh.md`
