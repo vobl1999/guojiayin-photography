@@ -7,7 +7,12 @@ const R2_BASE = 'https://pub-7d773d4fe41a44659b035738f0562d96.r2.dev';
 const SAFE = /^[\w .-]+\.(jpg|jpeg|png|webp|avif)$/i;
 
 export async function onRequest(context) {
-  const file = context.params.file || '';
+  let file = context.params.file || '';
+
+  // 路由参数可能是 URL 编码的（如 %20），先解码再校验
+  try {
+    file = decodeURIComponent(file);
+  } catch {}
 
   if (!SAFE.test(file)) {
     return new Response('Not found', { status: 404 });
