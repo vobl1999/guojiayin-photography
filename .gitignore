@@ -31,3 +31,6 @@ Thumbs.db
 # editor
 .vscode/
 .idea/
+
+# local tooling artifacts (vision router etc.)
+.dsh-vision-router/

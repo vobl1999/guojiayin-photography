@@ -25,6 +25,7 @@ export const SITE = {
     x: { label: 'X', url: 'https://x.com/vobl1999' },
     douyin: { label: '抖音', url: 'https://www.douyin.com/user/MS4wLjABAAAAIHl26glyy12oz6SXxRDgL4Bh18y6Z3jBdQO5FcVzWTM' },
     bilibili: { label: 'Bilibili', url: 'https://space.bilibili.com/1271779116' },
+    linkedin: { label: 'LinkedIn', url: 'https://www.linkedin.com/in/%E5%98%89%E8%83%A4-%E9%83%AD-370414392' },
   },
 
   /* ── 原图下载（R2 存储桶） ────────────────────────────── */

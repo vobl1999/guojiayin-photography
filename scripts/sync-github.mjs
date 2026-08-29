@@ -3,13 +3,20 @@
  * 1) 本地 git 提交  2) 通过 api.github.com 同步到 GitHub（github.com 被墙时也能用）
  * 用法：node scripts/sync-github.mjs ["提交信息"]
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const OWNER = 'vobl1999';
 const REPO = 'guojiayin-photography';
 const BRANCH = 'main';
 const MSG = process.argv[2] || 'sync: update site content';
+const isDir = (p) => {
+  try {
+    return statSync(p).isDirectory();
+  } catch {
+    return false;
+  }
+};
 
 // ── 1) 检测改动（-z 避免文件名带空格被转义） ─────────────────
 const status = execSync('git status --porcelain -z', { encoding: 'utf8' });
@@ -20,6 +27,8 @@ const DELETED = [];
 for (const part of parts) {
   const flag = part.slice(0, 2);
   const path = part.slice(3);
+  // 跳过目录（未跟踪目录在 porcelain 里是 "?? dir/"），否则 readFileSync 会 EISDIR
+  if (path.endsWith('/') || (flag.includes('?') && isDir(path))) continue;
   // 注意：porcelain 里未暂存的删除/新增是 " D"/" A"（空格开头），
   // 必须用 includes 而不是 startsWith，否则删除永远同步不到远端
   if (flag.includes('?') || flag.includes('A')) ADDED.push(path);

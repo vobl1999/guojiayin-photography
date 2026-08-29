@@ -1,0 +1,147 @@
+---
+/**
+ * 社交链接：灰色 Q 版图标芯片 + 平台名。
+ * 用法：<SocialLink name="x" url="..." label="X" />
+ * name 支持：x / douyin / bilibili / linkedin（其余平台不渲染图标，只显示文字）
+ * 悬停时芯片变金色并轻轻上浮。
+ */
+interface Props {
+  name: string;
+  url: string;
+  label: string;
+}
+
+const { name, url, label } = Astro.props;
+---
+
+<a class="social-link" href={url} target="_blank" rel="noopener noreferrer">
+  <span class="social-chip" aria-hidden="true">
+    {
+      name === 'x' && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round">
+          <path d="M7.3 7.3 16.7 16.7"></path>
+          <path d="M16.7 7.3 7.3 16.7"></path>
+        </svg>
+      )
+    }
+    {
+      name === 'douyin' && (
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="8.5" cy="16.9" r="3.3"></circle>
+          <rect x="11.2" y="6.6" width="2.2" height="10.4" rx="1.1"></rect>
+          <path d="M13.4 6.6h3.5c1.3 0 2.3.9 2.3 2.1s-1 2.1-2.3 2.1h-3.5z"></path>
+        </svg>
+      )
+    }
+    {
+      name === 'bilibili' && (
+        <svg viewBox="0 0 24 24">
+          <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none">
+            <line x1="8.2" y1="7.8" x2="9.4" y2="4.9"></line>
+            <line x1="15.8" y1="7.8" x2="14.6" y2="4.9"></line>
+          </g>
+          <circle cx="7.9" cy="4.5" r="1.15" fill="currentColor"></circle>
+          <circle cx="16.1" cy="4.5" r="1.15" fill="currentColor"></circle>
+          <rect x="5" y="8.2" width="14" height="11.6" rx="3.7" fill="currentColor"></rect>
+          <g class="cutout">
+            <rect x="9.1" y="11.3" width="1.9" height="3.5" rx="0.95"></rect>
+            <rect x="13" y="11.3" width="1.9" height="3.5" rx="0.95"></rect>
+          </g>
+          <path
+            class="cutout-stroke"
+            d="M10.7 16.9c.5 1 1.7 1.3 2.7.7"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      )
+    }
+    {
+      name === 'linkedin' && (
+        <svg viewBox="0 0 24 24">
+          <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="4.7" fill="currentColor"></rect>
+          <g class="cutout">
+            <circle cx="8" cy="8.7" r="1.35"></circle>
+            <rect x="7.3" y="10.9" width="1.5" height="6.7" rx="0.75"></rect>
+          </g>
+          <path
+            class="cutout-stroke"
+            d="M11.7 17.6v-6.3c0-1.6 1.2-2.9 2.9-2.9h.4c1.7 0 2.9 1.3 2.9 2.9v6.3"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      )
+    }
+  </span>
+  <span class="social-name">{label}</span>
+</a>
+
+<style>
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--ink-2);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 灰色 Q 版芯片：暖灰底 + 奶油色图形 */
+  .social-chip {
+    --chip-bg: #a29b8e;
+    width: 2.45rem;
+    height: 2.45rem;
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    background: var(--chip-bg);
+    border-radius: 30%;
+    color: #f4f1ea;
+    transition:
+      background 0.35s var(--ease),
+      transform 0.35s var(--ease);
+  }
+
+  .social-chip svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: block;
+  }
+
+  /* 芯片上的镂空（bilibili 眼睛/嘴、LinkedIn 的 in）跟随芯片底色 */
+  .cutout {
+    fill: var(--chip-bg);
+  }
+
+  .cutout-stroke {
+    fill: none;
+    stroke: var(--chip-bg);
+  }
+
+  .social-name {
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .social-link:hover .social-chip,
+  .social-link:focus-visible .social-chip {
+    --chip-bg: var(--gold);
+    background: var(--gold);
+    transform: translateY(-3px);
+  }
+
+  .social-link:hover .social-name,
+  .social-link:focus-visible .social-name {
+    color: var(--gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .social-chip {
+      transition: none;
+    }
+  }
+</style>

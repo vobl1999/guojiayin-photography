@@ -1,6 +1,7 @@
 ---
 import Layout from '../../components/Layout.astro';
 import Reveal from '../../components/Reveal.astro';
+import SocialLink from '../../components/SocialLink.astro';
 import { SITE } from '../../config/site';
 import { translate, type Lang } from '../../i18n/ui';
 
@@ -12,7 +13,7 @@ const { lang = 'en' } = Astro.params;
 const L: Lang = lang === 'zh' ? 'zh' : 'en';
 const t = (key: Parameters<typeof translate>[1]) => translate(L, key);
 
-const socials = Object.values(SITE.socials).filter((s) => s.url);
+const socials = Object.entries(SITE.socials).filter(([, s]) => s.url);
 ---
 
 <Layout title={t('contact.title')} description={t('contact.intro')}>
@@ -48,10 +49,8 @@ const socials = Object.values(SITE.socials).filter((s) => s.url);
           <div class="contact-socials">
             <p class="label">{t('contact.elsewhere')}</p>
             <div class="social-list">
-              {socials.map((s) => (
-                <a class="link" href={s.url} target="_blank" rel="noopener noreferrer">
-                  {s.label}<span class="arrow">&nbsp;→</span>
-                </a>
+              {socials.map(([key, s]) => (
+                <SocialLink name={key} url={s.url} label={s.label} />
               ))}
             </div>
           </div>
@@ -173,6 +172,7 @@ const socials = Object.values(SITE.socials).filter((s) => s.url);
   .social-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 2.2rem;
+    gap: 1.1rem 2.4rem;
+    padding-top: 0.4rem;
   }
 </style>
