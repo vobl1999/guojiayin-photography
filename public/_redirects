@@ -6,3 +6,6 @@
 /zh/journal    https://blog.vobl.cn/             301
 /en/journal/*  https://blog.vobl.cn/post/:splat  301
 /zh/journal/*  https://blog.vobl.cn/post/:splat  301
+
+# 作品集不再提供 RSS，订阅指向博客站
+/rss.xml       https://blog.vobl.cn/rss.xml      301

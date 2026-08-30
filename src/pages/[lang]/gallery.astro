@@ -490,7 +490,8 @@ const galleryLd = JSON.stringify({
 
   :global(.lb-img) {
     max-width: 94vw;
-    max-height: 86vh;
+    /* 底部预留胶片条+文字区域（约 10.5rem），大图不再与缩略图栏重叠 */
+    max-height: calc(100vh - 10.5rem);
     object-fit: contain;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s var(--ease);
