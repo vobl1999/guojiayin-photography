@@ -34,3 +34,5 @@ Thumbs.db
 
 # local tooling artifacts (vision router etc.)
 .dsh-vision-router/
+
+# local gate secret.gate-secret
