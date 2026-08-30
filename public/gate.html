@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人机验证 — Guo Jiayin</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --paper:#f4f1ea; --ink:#1a1713; --ink-2:rgba(26,23,19,.64); --ink-3:rgba(26,23,19,.38);
+    --line:rgba(26,23,19,.14); --gold:#9a7b4f;
+  }
+  [data-theme="dark"]{
+    --paper:#131110; --ink:#ece7dd; --ink-2:rgba(236,231,221,.62); --ink-3:rgba(236,231,221,.36);
+    --line:rgba(236,231,221,.14); --gold:#c39a6a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Inter','Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;
+    min-height:100vh; display:grid; place-items:center; padding:1.5rem;
+    background-image:radial-gradient(42rem 42rem at 12% -8%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 62%),
+      radial-gradient(38rem 38rem at 108% 16%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 60%);
+  }
+  .panel{
+    width:min(30rem, 100%); text-align:center; padding:clamp(1.8rem,5vw,2.8rem);
+    background:color-mix(in srgb, var(--paper) 72%, transparent);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5);
+    border:1px solid var(--line); border-radius:1.1rem;
+    box-shadow:0 12px 40px -18px rgba(26,23,19,.28);
+  }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .panel{background:var(--paper)}
+  }
+  .wordmark{font-family:'Songti SC','STSong',Georgia,serif;font-size:1.25rem;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
+  .wordmark .dot{color:var(--gold)}
+  h1{font-family:'Songti SC','STSong',Georgia,serif;font-weight:600;font-size:clamp(1.5rem,4vw,1.9rem);margin:1.1rem 0 .5rem}
+  p{color:var(--ink-2);font-size:.88rem;line-height:1.7}
+  .widget{display:flex;justify-content:center;margin-top:1.4rem;min-height:4.4rem}
+  .msg{color:#b3452e;font-size:.85rem;min-height:1.4em;margin-top:1rem}
+  .spinner{width:1.4rem;height:1.4rem;margin:1rem auto 0;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:s .8s linear infinite;display:none}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .lang{position:fixed;top:1rem;right:1.2rem;font-size:.75rem;color:var(--ink-3);cursor:pointer;background:none;border:0}
+</style>
+<script>
+  // 主题：优先用户选择，其次系统偏好
+  try {
+    var t = localStorage.getItem('theme-vobl');
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body>
+  <button class="lang" onclick="toggleTheme()" title="切换深浅色">☾ / ☀</button>
+  <div class="panel">
+    <a class="wordmark" href="/">Guo Jiayin<span class="dot">.</span></a>
+    <h1>请先完成人机验证</h1>
+    <p>验证通过后可浏览全站，24 小时内无需重复。<br>Please complete the check to continue.</p>
+    <div class="widget">
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAEiACKAD2IxsS8OL" data-theme="auto" data-callback="done" data-error-callback="err"></div>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div class="spinner" id="spin"></div>
+  </div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script>
+    function toggleTheme(){
+      var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', cur);
+      try { localStorage.setItem('theme-vobl', cur); } catch(e){}
+    }
+    function nextUrl(){
+      var n = new URLSearchParams(location.search).get('next') || '/';
+      if (n.indexOf('/') !== 0 || n.indexOf('//') === 0) return '/';
+      return n;
+    }
+    async function done(token){
+      document.getElementById('spin').style.display = 'block';
+      try {
+        var res = await fetch('/api/gate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cfToken: token })
+        });
+        var data = await res.json();
+        if (res.ok && data.ok) { location.href = nextUrl(); }
+        else { document.getElementById('msg').textContent = data.error || '验证失败，请重试。'; document.getElementById('spin').style.display = 'none'; }
+      } catch (e) {
+        document.getElementById('msg').textContent = '网络错误，请重试。';
+        document.getElementById('spin').style.display = 'none';
+      }
+    }
+    function err(){
+      document.getElementById('msg').textContent = '验证组件加载失败，请刷新重试。';
+    }
+  </script>
+</body>
+</html>
