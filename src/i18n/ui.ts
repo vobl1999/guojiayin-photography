@@ -15,7 +15,7 @@ export const languages: Record<Lang, string> = {
 const en = {
   // Header
   'nav.portfolio': 'Portfolio',
-  'nav.journal': 'Journal',
+  'nav.journal': 'Blog',
   'nav.about': 'About',
   'nav.contact': 'Contact',
   'menu.open': 'Open menu',
@@ -86,7 +86,7 @@ const en = {
 
 const zh: Record<keyof typeof en, string> = {
   'nav.portfolio': '作品集',
-  'nav.journal': '日志',
+  'nav.journal': '博客',
   'nav.about': '关于',
   'nav.contact': '联系',
   'menu.open': '打开菜单',
