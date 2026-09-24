@@ -37,3 +37,6 @@ Thumbs.db
 
 # local gate secret
 .gate-secret
+
+# 交接文件（含凭据，绝不入库）
+HANDOVER.md
