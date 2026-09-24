@@ -40,3 +40,9 @@ Thumbs.db
 
 # 交接文件（含凭据，绝不入库）
 HANDOVER.md
+
+# 个人文稿/临时文档：不要被 sync 脚本自动提交
+*.docx
+*.doc
+*.pdf
+~$*
